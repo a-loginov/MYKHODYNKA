@@ -8,7 +8,7 @@
 <style>
     /* ═══════════ APPS2: ЛЁГКАЯ ТЕМА (адаптация референса) ═══════════ */
     .apps2-page.portal-body {
-        background: url('{{ url_for("static", filename="img/apps-wallpeprer.png") }}') top center no-repeat, #f4f6fb;
+        background: url('/static/img/apps-wallpeprer.png') top center no-repeat, #f4f6fb;
         background-size: cover;
         background-position: top center;
         background-repeat: no-repeat;
@@ -18,7 +18,7 @@
     }
     @media (prefers-color-scheme: dark) {
         .apps2-page.portal-body {
-            background: url('{{ url_for("static", filename="img/apps-wallpeprer-night.png") }}') top center no-repeat, #101416;
+            background: url('/static/img/apps-wallpeprer-night.png') top center no-repeat, #101416;
             background-size: cover;
             background-position: top center;
             background-repeat: no-repeat;
@@ -59,10 +59,26 @@
     }
 
     .apps2-greeting {
+        display: flex;
+        align-items: center;
+        gap: 14px;
         margin-bottom: 28px;
         color: #fff;
         text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     }
+
+    .apps2-avatar {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        object-fit: cover;
+        flex-shrink: 0;
+        background: #fff;
+        border: 2px solid rgba(255, 255, 255, 0.7);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+    }
+
+    .apps2-greeting-text { min-width: 0; }
 
     .apps2-greeting-small {
         font-size: 1rem;
@@ -369,8 +385,11 @@
 
 <div class="apps2-container">
     <div class="apps2-greeting">
-        <div class="apps2-greeting-small">Здравствуйте,</div>
-        <div class="apps2-greeting-name">{{ name or 'Житель' }}</div>
+        <img class="apps2-avatar" src="/static/favicon.png" alt="Аватар">
+        <div class="apps2-greeting-text">
+            <div class="apps2-greeting-small">Здравствуйте,</div>
+            <div class="apps2-greeting-name">{{ name or 'Житель' }}</div>
+        </div>
     </div>
 
     <div class="apps2-layout">
