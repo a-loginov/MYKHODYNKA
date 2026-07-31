@@ -32,10 +32,10 @@
                     </div>
                 </div>
                 <div class="row__actions">
-                    <form method="post" action="{{ url_for('security.pass_action', uuid=p.id, action='admit') }}">
+                    <form method="post" action="{{ url_for('security.pass_action', pass_id=p.id, action='admit') }}">
                         <button type="submit" class="btn btn--ok">Впустить</button>
                     </form>
-                    <form method="post" action="{{ url_for('security.pass_action', uuid=p.id, action='close') }}"
+                    <form method="post" action="{{ url_for('security.pass_action', pass_id=p.id, action='close') }}"
                           onsubmit="return confirm('Закрыть пропуск №{{ p.number }}? Гость больше не пройдёт.');">
                         <button type="submit" class="btn btn--danger">Закрыть</button>
                     </form>
@@ -75,7 +75,7 @@
                     </div>
                 </div>
                 <div class="row__actions">
-                    <form method="post" action="{{ url_for('security.contractor_close', uuid=c.id) }}">
+                    <form method="post" action="{{ url_for('security.contractor_close', c_id=c.id) }}">
                         <button type="submit" class="btn btn--ghost">Ушёл</button>
                     </form>
                 </div>

@@ -38,7 +38,7 @@
             </div>
             <div class="row__actions">
                 {% if pr.status == 'new' %}
-                <form method="post" action="{{ url_for('admin.resolve_problem', uuid=pr.id) }}">
+                <form method="post" action="{{ url_for('admin.resolve_problem', pr_id=pr.id) }}">
                     <button type="submit" class="btn btn--ok">Решено</button>
                 </form>
                 {% endif %}
@@ -66,7 +66,7 @@
                 </div>
                 <div class="row__actions">
                     {% if r.status != 'done' %}
-                    <form method="post" action="{{ url_for('admin.resolve_request', uuid=r.id) }}">
+                    <form method="post" action="{{ url_for('admin.resolve_request', req_id=r.id) }}">
                         <button type="submit" class="btn btn--ok">Выполнено</button>
                     </form>
                     {% endif %}

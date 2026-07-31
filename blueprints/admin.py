@@ -115,10 +115,10 @@ def health():
 
 # ───── Действия ─────
 
-@admin.route('/requests/<uuid>/resolve', methods=['POST'])
+@admin.route('/requests/<uuid:req_id>/resolve', methods=['POST'])
 @admin_required
-def resolve_request(uuid):
-    req = ServiceRequest.query.get(uuid)
+def resolve_request(req_id):
+    req = ServiceRequest.query.get(req_id)
     if req:
         req.status = 'done'
         db.session.commit()
@@ -126,10 +126,10 @@ def resolve_request(uuid):
     return redirect(url_for('admin.dashboard'))
 
 
-@admin.route('/problems/<uuid>/resolve', methods=['POST'])
+@admin.route('/problems/<uuid:pr_id>/resolve', methods=['POST'])
 @admin_required
-def resolve_problem(uuid):
-    pr = ProblemReport.query.get(uuid)
+def resolve_problem(pr_id):
+    pr = ProblemReport.query.get(pr_id)
     if pr:
         pr.status = 'resolved'
         pr.resolved_at = datetime.now()

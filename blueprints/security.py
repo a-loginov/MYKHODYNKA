@@ -96,10 +96,10 @@ def _resident_name(user_id):
     return label or None
 
 
-@security.route('/pass/<uuid>/<action>', methods=['POST'])
+@security.route('/pass/<uuid:pass_id>/<action>', methods=['POST'])
 @guard_required
-def pass_action(uuid, action):
-    gp = GuestPass.query.get(uuid)
+def pass_action(pass_id, action):
+    gp = GuestPass.query.get(pass_id)
     if not gp:
         flash('Пропуск не найден', 'error')
         return redirect(url_for('security.dashboard'))
@@ -153,10 +153,10 @@ def contractor_add():
     return redirect(url_for('security.dashboard'))
 
 
-@security.route('/contractors/<uuid>/close', methods=['POST'])
+@security.route('/contractors/<uuid:c_id>/close', methods=['POST'])
 @guard_required
-def contractor_close(uuid):
-    c = Contractor.query.get(uuid)
+def contractor_close(c_id):
+    c = Contractor.query.get(c_id)
     if c:
         c.status = 'closed'
         c.closed_at = datetime.now()
