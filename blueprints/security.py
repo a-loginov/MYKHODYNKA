@@ -7,7 +7,7 @@ from flask import (Blueprint, render_template, request, redirect, url_for,
 from db_settings import db, GuestPass, Contractor, ProblemReport, people, Notification
 from config import SECURITY_PASSWORD
 
-security = Blueprint('security', __name__, url_prefix='/security',
+security = Blueprint('security', __name__, url_prefix='/guard/application',
                      template_folder='../templates/security')
 
 
