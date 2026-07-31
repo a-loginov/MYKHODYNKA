@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import current_user, login_required
 
-from db_settings import db, ServiceRequest
+from db_settings import db, ServiceRequest, GuestPass
 
 portal = Blueprint('portal', __name__, template_folder='../templates/portal')
 
@@ -19,6 +19,21 @@ REQUEST_CATEGORIES = [
 
 CATEGORY_TITLES = {c["id"]: c["title"] for c in REQUEST_CATEGORIES}
 STATUS_LABELS = {"new": "Новая", "in_progress": "В работе", "done": "Выполнена"}
+
+GUEST_CATEGORY_TITLES = {
+    "guest": "Гость",
+    "courier": "Курьер",
+    "delivery": "Доставка",
+    "transport": "Транспорт",
+    "permanent": "Постоянный",
+}
+
+GUEST_STATUS_LABELS = {"new": "Ожидает", "approved": "Разрешён", "done": "Прошёл", "rejected": "Отклонён"}
+
+
+def _next_pass_number():
+    top = db.session.query(db.func.max(GuestPass.number)).scalar()
+    return (top or 0) + 1
 
 
 def _next_number():
@@ -52,7 +67,83 @@ def dashboard():
 @portal.route('/passes')
 @login_required
 def passes():
-    return render_template('portal/passes.html')
+    rows = (GuestPass.query
+            .filter(GuestPass.user_id == current_user.id)
+            .order_by(GuestPass.created_at.desc())
+            .all())
+    passes_ = [{
+        "id": p.id,
+        "number": p.number,
+        "category": p.category,
+        "category_label": GUEST_CATEGORY_TITLES.get(p.category, p.category),
+        "transport": p.transport,
+        "guest_name": p.guest_name,
+        "guest_phone": p.guest_phone,
+        "visit_at": p.visit_at.strftime('%d.%m %H:%M') if p.visit_at else None,
+        "status": p.status,
+        "status_label": GUEST_STATUS_LABELS.get(p.status, p.status),
+        "created": p.created_at.strftime('%d.%m'),
+    } for p in rows]
+    return render_template('portal/passes.html', passes=passes_)
+
+
+@portal.route('/passes/new', methods=['POST'])
+@login_required
+def passes_create():
+    category = request.form.get('category', 'guest')
+    if category not in GUEST_CATEGORY_TITLES:
+        category = 'guest'
+    guest_name = (request.form.get('guest_name') or '').strip()
+    guest_phone = (request.form.get('guest_phone') or '').strip()
+    transport = request.form.get('transport', 'walking')
+    visit_at_raw = request.form.get('visit_at') or None
+
+    if not guest_name:
+        flash('Укажите имя гостя', 'error')
+        return redirect(url_for('portal.passes'))
+
+    from datetime import datetime
+    visit_at = None
+    if visit_at_raw:
+        try:
+            visit_at = datetime.fromisoformat(visit_at_raw)
+        except ValueError:
+            visit_at = None
+
+    gp = GuestPass(
+        user_id=current_user.id,
+        number=_next_pass_number(),
+        category=category,
+        transport=transport,
+        visit_at=visit_at,
+        guest_name=guest_name,
+        guest_phone=guest_phone or None,
+        status="new",
+    )
+    db.session.add(gp)
+    db.session.commit()
+    flash(f'Пропуск №{gp.number} для гостя создан', 'success')
+    return redirect(url_for('portal.passes'))
+
+
+# ───── Публичная страница гостя (открывается по ссылке, без входа) ─────
+
+@portal.route('/p/<uuid>')
+def guest_pass(uuid):
+    gp = GuestPass.query.get(uuid)
+    if not gp:
+        return render_template('portal/guest_pass.html', error=True), 404
+    return render_template('portal/guest_pass.html', pass_info={
+        "id": gp.id,
+        "number": gp.number,
+        "category_label": GUEST_CATEGORY_TITLES.get(gp.category, gp.category),
+        "guest_name": gp.guest_name,
+        "guest_phone": gp.guest_phone,
+        "transport": gp.transport,
+        "visit_at": gp.visit_at.strftime('%d.%m.%Y в %H:%M') if gp.visit_at else None,
+        "status": gp.status,
+        "status_label": GUEST_STATUS_LABELS.get(gp.status, gp.status),
+    })
 
 
 @portal.route('/passes/permanent')

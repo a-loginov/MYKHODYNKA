@@ -611,93 +611,78 @@ hr {
 .glass-block {
   position: relative;
   z-index: 1;
-  margin-top: -30px;
   padding: 28px 20px 24px;
   border-radius: 28px;
-  background: rgba(18, 18, 38, 0.85);
+  background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(28px);
   -webkit-backdrop-filter: blur(28px);
+  box-shadow: 0 4px 15px rgba(20, 24, 60, 0.08);
+  color: #1b1f3b;
 }
 
 .service-intro {
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.55);
+  color: #4a4f6b;
   line-height: 1.5;
   margin-bottom: 16px;
 }
 
-@media (max-width: 600px) {
-  .page-inner { padding-left: 16px; padding-right: 16px; }
-}
-
-/* ───── Compact cover for service sub-pages ───── */
-.cover--page {
-  height: 34vh;
-  min-height: 230px;
-  flex-direction: column;
-  gap: 0;
-  padding: 28px 0 56px;
-}
-
-.cover--page .cover__inner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+/* ───── Sub-page header (без ковра, стиль MY1409) ───── */
+.sub-head {
   position: relative;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 96px 24px 28px;
+  text-align: center;
 }
 
-.back-btn {
+.sub-back {
   position: absolute;
-  left: 4px;
-  top: 4px;
+  left: 24px;
+  top: 24px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 42px;
   height: 42px;
   border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  background: rgba(255, 255, 255, 0.08);
-  color: #fff;
+  background: rgba(255, 255, 255, 0.9);
+  color: #1b1f3b;
   font-size: 22px;
   line-height: 1;
   text-decoration: none;
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 4px 15px rgba(20, 24, 60, 0.12);
   transition: background 200ms var(--ease-out), transform 200ms var(--ease-out);
 }
 
-.back-btn:hover {
-  background: rgba(255, 255, 255, 0.16);
-}
+.sub-back:hover { background: #fff; transform: scale(1.05); }
+.sub-back:active { transform: scale(0.92); }
 
-.back-btn:active { transform: scale(0.92); }
+.sub-head__icon { font-size: 42px; line-height: 1; margin-bottom: 10px; }
 
-.cover__icon {
-  font-size: 42px;
-  line-height: 1;
-  margin-bottom: 10px;
-}
-
-.cover__title {
+.sub-head__title {
   font-size: 30px;
   font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1.2;
-  text-align: center;
+  color: #1b1f3b;
 }
 
-.cover__subtitle {
+.sub-head__subtitle {
   margin-top: 6px;
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.6);
-  text-align: center;
+  color: #4a4f6b;
 }
 
 @media (min-width: 1024px) {
-  .cover--page { height: 40vh; min-height: 280px; }
-  .cover--page .cover__title { font-size: 38px; }
-  .cover--page .cover__icon { font-size: 50px; }
+  .sub-head__title { font-size: 38px; }
+  .sub-head__icon { font-size: 50px; }
+  .sub-head { padding-top: 110px; }
+}
+
+@media (max-width: 600px) {
+  .page-inner { padding-left: 16px; padding-right: 16px; }
+  .sub-head { padding-left: 16px; padding-right: 16px; }
 }
 
 /* ───── Mobile ───── */
@@ -1616,13 +1601,6 @@ hr {
 /* ═══════════ LIGHT THEME OVERRIDES (подстраницы, фон как на apps) ═══════════
    .portal-body уже получает обложку apps-wallpaper.svg (см. выше).
    Переопределяем тёмные компоненты под светлый стиль apps. */
-
-.cover,
-.cover--page {
-  background-image:
-    linear-gradient(to bottom, rgba(12, 15, 26, 0.25) 0%, rgba(12, 15, 26, 0.45) 100%),
-    url('../img/apps-wallpaper.svg');
-}
 
 .glass-block {
   background: rgba(255, 255, 255, 0.92);
