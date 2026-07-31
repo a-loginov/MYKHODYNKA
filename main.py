@@ -20,6 +20,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = (
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {"pool_pre_ping": True}
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret')
+app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024  # 5 МБ — защита от гигантских загрузок (аватар)
 
 db.init_app(app)
 bcrypt.init_app(app)
@@ -68,6 +69,9 @@ _SCHEMA_MIGRATIONS = [
     "ALTER TABLE people ALTER COLUMN group_letter DROP NOT NULL",
     "ALTER TABLE guest_pass ADD COLUMN IF NOT EXISTS arrived_at TIMESTAMP",
     "ALTER TABLE people ADD COLUMN IF NOT EXISTS phone_hidden BOOLEAN DEFAULT FALSE NOT NULL",
+    "ALTER TABLE people ADD COLUMN IF NOT EXISTS avatar BYTEA",
+    "ALTER TABLE people ADD COLUMN IF NOT EXISTS avatar_mime VARCHAR(40)",
+    "ALTER TABLE people ADD COLUMN IF NOT EXISTS avatar_updated TIMESTAMP",
 ]
 
 

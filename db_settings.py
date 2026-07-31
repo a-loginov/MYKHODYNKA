@@ -27,6 +27,20 @@ class people(db.Model, UserMixin):
     password_hash = db.Column(db.String(128), nullable=True)
     apartment = db.Column(db.String(10), nullable=True)
     phone_hidden = db.Column(db.Boolean, default=False, nullable=False)  # «Заблокировать номер»
+    # Фотография профиля: сами байты — deferred (не тянем в каждом запросе current_user),
+    # а mime и время обновления — лёгкие поля для проверки наличия и cache-busting.
+    avatar = deferred(db.Column(db.LargeBinary, nullable=True))
+    avatar_mime = db.Column(db.String(40), nullable=True)
+    avatar_updated = db.Column(db.DateTime, nullable=True)
+
+    @property
+    def has_avatar(self):
+        return bool(self.avatar_mime)
+
+    @property
+    def avatar_version(self):
+        """Токен для cache-busting URL аватара (меняется при загрузке новой фото)."""
+        return int(self.avatar_updated.timestamp()) if self.avatar_updated else 0
 
     def set_password(self, password):
         self.password_hash = bcrypt.generate_password_hash(password).decode('utf-8')

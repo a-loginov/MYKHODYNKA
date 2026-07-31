@@ -1,4 +1,6 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify, session
+from datetime import datetime
+
+from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify, session, Response, abort
 from flask_login import current_user, login_required
 
 from db_settings import db, ServiceRequest, GuestPass, Notification, people
@@ -387,6 +389,63 @@ def account_privacy():
     db.session.commit()
     flash('Настройки приватности сохранены', 'success')
     return redirect(url_for('portal.account'))
+
+
+# ───── Фотография профиля (аватар) ─────
+
+ALLOWED_AVATAR_MIMES = {'image/jpeg', 'image/png', 'image/webp', 'image/gif'}
+MAX_AVATAR_BYTES = 3 * 1024 * 1024  # 3 МБ
+
+
+@portal.route('/account/avatar', methods=['POST'])
+@login_required
+def account_avatar_upload():
+    f = request.files.get('avatar')
+    if not f or not f.filename:
+        flash('Выберите файл изображения', 'error')
+        return redirect(url_for('portal.account'))
+    mime = (f.mimetype or '').lower()
+    if mime not in ALLOWED_AVATAR_MIMES:
+        flash('Поддерживаются только изображения JPG, PNG, WEBP или GIF', 'error')
+        return redirect(url_for('portal.account'))
+    data = f.read(MAX_AVATAR_BYTES + 1)
+    if len(data) > MAX_AVATAR_BYTES:
+        flash('Файл слишком большой — максимум 3 МБ', 'error')
+        return redirect(url_for('portal.account'))
+    if not data:
+        flash('Файл пустой или повреждён', 'error')
+        return redirect(url_for('portal.account'))
+    u = current_user
+    u.avatar = data
+    u.avatar_mime = mime
+    u.avatar_updated = datetime.now()
+    db.session.commit()
+    flash('Фотография обновлена', 'success')
+    return redirect(url_for('portal.account'))
+
+
+@portal.route('/account/avatar/delete', methods=['POST'])
+@login_required
+def account_avatar_delete():
+    u = current_user
+    u.avatar = None
+    u.avatar_mime = None
+    u.avatar_updated = None
+    db.session.commit()
+    flash('Фотография удалена', 'success')
+    return redirect(url_for('portal.account'))
+
+
+@portal.route('/account/avatar/<uuid:uid>')
+@login_required
+def avatar(uid):
+    u = db.session.get(people, str(uid))
+    if not u or not u.avatar:
+        abort(404)
+    resp = Response(u.avatar, mimetype=u.avatar_mime or 'image/jpeg')
+    # Приватный кэш на неделю; смена версии в URL (?v=avatar_version) сбросит его при обновлении.
+    resp.headers['Cache-Control'] = 'private, max-age=604800'
+    return resp
 
 
 # ───── Счётчики ─────

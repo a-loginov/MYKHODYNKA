@@ -385,7 +385,11 @@
 
 <div class="apps2-container">
     <div class="apps2-greeting">
+        {% if current_user.is_authenticated and current_user.has_avatar %}
+        <img class="apps2-avatar" src="{{ url_for('portal.avatar', uid=current_user.id) }}?v={{ current_user.avatar_version }}" alt="Аватар">
+        {% else %}
         <img class="apps2-avatar" src="/static/favicon.png" alt="Аватар">
+        {% endif %}
         <div class="apps2-greeting-text">
             <div class="apps2-greeting-small">Здравствуйте,</div>
             <div class="apps2-greeting-name">{{ name or 'Житель' }}</div>
