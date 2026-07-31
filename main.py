@@ -61,35 +61,35 @@ for _code in ERROR_PAGES:
     app.register_error_handler(_code, lambda e, c=_code: _render_error(c))
 
 
+_SCHEMA_MIGRATIONS = [
+    "ALTER TABLE people ADD COLUMN IF NOT EXISTS password_hash VARCHAR(128)",
+    "ALTER TABLE people ADD COLUMN IF NOT EXISTS apartment VARCHAR(10)",
+    "ALTER TABLE people ALTER COLUMN group_number DROP NOT NULL",
+    "ALTER TABLE people ALTER COLUMN group_letter DROP NOT NULL",
+    "ALTER TABLE guest_pass ADD COLUMN IF NOT EXISTS arrived_at TIMESTAMP",
+    "ALTER TABLE people ADD COLUMN IF NOT EXISTS phone_hidden BOOLEAN DEFAULT FALSE NOT NULL",
+]
+
+
 def _sync_schema():
     """Создаёт недостающие таблицы и идемпотентно дополняет существующие."""
     with app.app_context():
         try:
             # Создаём таблицы по моделям (не трогает существующие)
             db.create_all()
-            # Для уже существующих таблиц добавляем недостающие колонки
-            db.session.execute(text(
-                "ALTER TABLE people ADD COLUMN IF NOT EXISTS password_hash VARCHAR(128)"
-            ))
-            db.session.execute(text(
-                "ALTER TABLE people ADD COLUMN IF NOT EXISTS apartment VARCHAR(10)"
-            ))
-            db.session.execute(text(
-                "ALTER TABLE people ALTER COLUMN group_number DROP NOT NULL"
-            ))
-            db.session.execute(text(
-                "ALTER TABLE people ALTER COLUMN group_letter DROP NOT NULL"
-            ))
-            db.session.execute(text(
-                "ALTER TABLE guest_pass ADD COLUMN IF NOT EXISTS arrived_at TIMESTAMP"
-            ))
-            db.session.execute(text(
-                "ALTER TABLE people ADD COLUMN IF NOT EXISTS phone_hidden BOOLEAN DEFAULT FALSE NOT NULL"
-            ))
-            db.session.commit()
         except Exception as exc:  # noqa: BLE001
             db.session.rollback()
-            print(f"[warn] schema sync skipped: {exc}")
+            print(f"[warn] create_all skipped: {exc}")
+
+        # Каждый ALTER — в своей транзакции, чтобы падение одного
+        # не откатывало остальные (иначе неполная схема → 500).
+        for stmt in _SCHEMA_MIGRATIONS:
+            try:
+                db.session.execute(text(stmt))
+                db.session.commit()
+            except Exception as exc:  # noqa: BLE001
+                db.session.rollback()
+                print(f"[warn] schema sync skipped: {stmt!r}: {exc}")
 
 
 _sync_schema()
