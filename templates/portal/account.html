@@ -1,0 +1,131 @@
+{% extends "portal/base_portal.html" %}
+{% from "portal/_macros.html" import page_cover %}
+
+{% block title %}MYKHODYNKA — Аккаунт{% endblock %}
+
+{% block content %}
+{{ page_cover('Аккаунт', 'Ваш профиль жителя', '👤') }}
+
+<div class="page-inner">
+    <div class="glass-block">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+            <div class="flash flash--{{ category }}" role="status">
+                <span aria-hidden="true">{{ '✓' if category == 'success' else '!' }}</span>
+                <span>{{ message }}</span>
+            </div>
+            {% endfor %}
+        {% endwith %}
+
+        <!-- Профиль -->
+        <div class="account-profile">
+            <div class="account-avatar" aria-hidden="true">
+                {{ full_name[:1] or 'Ж' }}
+            </div>
+            <div class="account-profile__info">
+                <h2 class="account-name">{{ full_name or 'Житель Ходынки' }}</h2>
+                <p class="account-sub">Жилой комплекс «Ходынка»{% if apartment %} · кв. {{ apartment }}{% endif %}</p>
+            </div>
+        </div>
+
+        <!-- Данные аккаунта -->
+        <h2 class="section-title">Данные аккаунта</h2>
+        <div class="account-list">
+            <div class="account-row">
+                <span class="account-row__label">Имя</span>
+                <span class="account-row__value">{{ full_name or '—' }}</span>
+            </div>
+            {% if apartment %}
+            <div class="account-row">
+                <span class="account-row__label">Квартира</span>
+                <span class="account-row__value">{{ apartment }}</span>
+            </div>
+            {% endif %}
+            <div class="account-row">
+                <span class="account-row__label">Телефон</span>
+                <span class="account-row__value">{{ phone or '—' }}</span>
+            </div>
+            <div class="account-row">
+                <span class="account-row__label">Статус</span>
+                <span class="status-badge status-badge--done">Подтверждён</span>
+            </div>
+        </div>
+
+        <!-- Действия -->
+        <h2 class="section-title">Действия</h2>
+        <div class="sub-grid">
+            <a class="sub-card" href="{{ url_for('portal.dashboard') }}">
+                <span class="sub-card__icon" aria-hidden="true">🏠</span>
+                <span class="sub-card__body">
+                    <h3>На главную</h3>
+                    <p>Вернуться к сервисам</p>
+                </span>
+                <span class="sub-card__chevron" aria-hidden="true">→</span>
+            </a>
+            <button type="button" class="sub-card" id="openSettings">
+                <span class="sub-card__icon" aria-hidden="true">⚙️</span>
+                <span class="sub-card__body">
+                    <h3>Настройки</h3>
+                    <p>Уведомления и предпочтения</p>
+                </span>
+                <span class="sub-card__chevron" aria-hidden="true">→</span>
+            </button>
+            <a class="sub-card sub-card--danger" href="{{ url_for('auth.logout') }}">
+                <span class="sub-card__icon" aria-hidden="true">↪️</span>
+                <span class="sub-card__body">
+                    <h3>Выйти</h3>
+                    <p>Завершить сессию</p>
+                </span>
+                <span class="sub-card__chevron" aria-hidden="true">→</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Bottom sheet: настройки -->
+<div class="overlay" id="settingsOverlay"></div>
+<div class="bottom-sheet" id="settingsSheet" role="dialog" aria-modal="true" aria-labelledby="settingsTitle" aria-hidden="true">
+    <div class="bottom-sheet__handle"></div>
+    <div class="bottom-sheet__header"><h2 id="settingsTitle">Настройки</h2></div>
+    <div class="bottom-sheet__body">
+        <div class="info-item">
+            <h3>Уведомления</h3>
+            <p>Скоро: настройка пуш-уведомлений о статусе заявок.</p>
+        </div>
+        <div class="info-item">
+            <h3>Предпочтения</h3>
+            <p>Скоро: темы оформления и язык интерфейса.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    (function () {
+        var overlay = document.getElementById('settingsOverlay');
+        var sheet = document.getElementById('settingsSheet');
+        var openBtn = document.getElementById('openSettings');
+
+        function close() {
+            sheet.classList.remove('open');
+            overlay.classList.remove('open');
+            sheet.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+        }
+
+        if (openBtn) {
+            openBtn.addEventListener('click', function () {
+                sheet.classList.add('open');
+                overlay.classList.add('open');
+                sheet.setAttribute('aria-hidden', 'false');
+                document.body.style.overflow = 'hidden';
+            });
+        }
+        if (overlay) overlay.addEventListener('click', close);
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') close();
+        });
+    })();
+</script>
+{% endblock %}

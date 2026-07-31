@@ -133,6 +133,19 @@ def messages():
     return render_template('portal/messages.html')
 
 
+@portal.route('/account')
+@login_required
+def account():
+    u = current_user
+    full_name = ' '.join(x for x in (u.surname, u.name, u.lastname) if x)
+    phone = u.phone or ''
+    if len(phone) == 11 and phone.startswith('7'):
+        phone = '+7 ' + phone[1:4] + ' ' + phone[4:7] + '-' + phone[7:9] + '-' + phone[9:11]
+    return render_template('portal/account.html',
+                           full_name=full_name, phone=phone,
+                           apartment=u.apartment)
+
+
 # ───── Счётчики ─────
 
 @portal.route('/meters')

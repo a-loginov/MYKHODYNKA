@@ -303,7 +303,10 @@ hr {
 /* ═══════════ PORTAL ═══════════ */
 
 .portal-body {
-  background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+  background: url('../img/apps-wallpaper.svg') top center no-repeat, linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+  background-size: cover;
+  background-position: top center;
+  background-repeat: no-repeat;
   min-height: 100vh;
   color: #fff;
 }
@@ -1608,4 +1611,161 @@ hr {
 
 @media (max-width: 600px) {
   .hero__name { font-size: 26px; }
+}
+
+/* ═══════════ LIGHT THEME OVERRIDES (подстраницы, фон как на apps) ═══════════
+   .portal-body уже получает обложку apps-wallpaper.svg (см. выше).
+   Переопределяем тёмные компоненты под светлый стиль apps. */
+
+.cover,
+.cover--page {
+  background-image:
+    linear-gradient(to bottom, rgba(12, 15, 26, 0.25) 0%, rgba(12, 15, 26, 0.45) 100%),
+    url('../img/apps-wallpaper.svg');
+}
+
+.glass-block {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  color: #1b1f3b;
+  box-shadow: 0 4px 15px rgba(20, 24, 60, 0.08);
+}
+
+.service-intro { color: #4a4f6b; }
+
+.sub-card {
+  background: #ffffff;
+  color: #1b1f3b;
+  box-shadow: 0 4px 15px rgba(20, 24, 60, 0.08);
+}
+
+.sub-card:hover { background: #f6f7ff; }
+
+.sub-card__body p { color: #6a6f8a; }
+.sub-card__chevron { color: #b0b4cf; }
+.sub-card:hover .sub-card__chevron { color: #4446E1; }
+
+.section-title { color: #5a5f7a; }
+
+.chip {
+  border: 1px solid rgba(20, 24, 60, 0.12);
+  background: #fff;
+  color: #5a5f7a;
+}
+
+.chip:hover { color: #1b1f3b; border-color: rgba(20, 24, 60, 0.28); }
+
+.chip.is-active {
+  color: #fff;
+  border-color: #4446E1;
+  background: #4446E1;
+}
+
+.request-item {
+  background: #f4f6fb;
+}
+
+.request-item__desc { color: #4a4f6b; }
+.request-item__meta { color: #9a9eb8; }
+.request-item__actions { border-top: 1px solid rgba(20, 24, 60, 0.08); }
+
+.share-btn {
+  border: 1px solid rgba(20, 24, 60, 0.12);
+  background: #fff;
+  color: #4446E1;
+}
+
+.share-btn:hover { background: #eef0ff; color: #4446E1; }
+
+.empty-state {
+  background: #f4f6fb;
+  border: 1px solid rgba(20, 24, 60, 0.08);
+  color: #9a9eb8;
+}
+
+.flash {
+  border: 1px solid rgba(20, 24, 60, 0.1);
+  background: #fff;
+}
+
+/* ───── Аккаунт ───── */
+.account-profile {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 8px 4px 20px;
+}
+
+.account-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #4446E1, #5d5fe0);
+  color: #fff;
+  font-size: 30px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  text-transform: uppercase;
+}
+
+.account-profile__info { min-width: 0; }
+
+.account-name {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1b1f3b;
+  line-height: 1.2;
+}
+
+.account-sub {
+  font-size: 14px;
+  color: #6a6f8a;
+  margin-top: 4px;
+}
+
+.account-list {
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 4px 15px rgba(20, 24, 60, 0.08);
+  overflow: hidden;
+}
+
+.account-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 18px;
+  border-bottom: 1px solid rgba(20, 24, 60, 0.06);
+}
+
+.account-row:last-child { border-bottom: none; }
+
+.account-row__label { font-size: 14px; color: #6a6f8a; }
+.account-row__value { font-size: 15px; font-weight: 600; color: #1b1f3b; }
+
+.sub-card--danger h3 { color: #dc3545; }
+.sub-card--danger .sub-card__chevron { color: #dc3545; }
+
+/* Формы внутри тёмного боттом-шита остаются тёмными — не трогаем.
+   Поля на светлом фоне (в body, вне bottom-sheet) — светлее: */
+.glass-block .form-group input,
+.glass-block .form-group textarea {
+  background: rgba(20, 24, 60, 0.04);
+  border-color: rgba(20, 24, 60, 0.12);
+  color: #1b1f3b;
+}
+
+.glass-block .form-group label { color: #5a5f7a; }
+.glass-block .form-group input::placeholder,
+.glass-block .form-group textarea::placeholder { color: #b0b4cf; }
+
+@media (max-width: 600px) {
+  .account-profile { gap: 14px; }
+  .account-avatar { width: 60px; height: 60px; font-size: 26px; }
+  .account-name { font-size: 19px; }
 }
