@@ -1,177 +1,422 @@
 {% extends "portal/base_portal.html" %}
-{% from "portal/_macros.html" import page_cover %}
 
 {% block title %}MYKHODYNKA — Аккаунт{% endblock %}
+{% block body_class %}account2-page{% endblock %}
 
 {% block content %}
-{{ page_cover('Аккаунт', 'Ваш профиль жителя', '👤') }}
+<style>
+    /* ═══════════ ACCOUNT2: liquid glass (адаптация референса под бренд) ═══════════ */
+    .account2-page {
+        --bg-secondary: rgba(255, 255, 255, 0.08);
+        --bg-tertiary: rgba(255, 255, 255, 0.06);
+        --bg-hover: rgba(255, 255, 255, 0.12);
+        --text-primary: #ffffff;
+        --text-secondary: rgba(255, 255, 255, 0.7);
+        --text-muted: rgba(255, 255, 255, 0.5);
+        --border-color: rgba(255, 255, 255, 0.12);
+        --border-light: rgba(255, 255, 255, 0.15);
+        --glass-bg: rgba(255, 255, 255, 0.08);
+        --glass-border: rgba(255, 255, 255, 0.2);
+        --cloud1-color1: rgba(109, 173, 104, 0.45);
+        --cloud1-color2: rgba(74, 133, 68, 0.35);
+        --cloud2-color1: rgba(132, 200, 121, 0.32);
+        --cloud2-color2: rgba(46, 94, 44, 0.28);
+        --shadow-color: rgba(0, 0, 0, 0.3);
+        --accent: #6DAD68;
+        --danger: #ff4d4d;
+        --bg-primary: #0b1410;
+    }
+    .account2-page[data-theme="light"] {
+        --bg-secondary: rgba(255, 255, 255, 0.9);
+        --bg-tertiary: rgba(255, 255, 255, 0.95);
+        --bg-hover: rgba(255, 255, 255, 1);
+        --text-primary: #1b1f3b;
+        --text-secondary: rgba(27, 31, 59, 0.7);
+        --text-muted: rgba(27, 31, 59, 0.5);
+        --border-color: rgba(0, 0, 0, 0.08);
+        --border-light: rgba(0, 0, 0, 0.1);
+        --glass-bg: rgba(255, 255, 255, 0.7);
+        --glass-border: rgba(0, 0, 0, 0.08);
+        --cloud1-color1: rgba(109, 173, 104, 0.55);
+        --cloud1-color2: rgba(132, 200, 121, 0.4);
+        --cloud2-color1: rgba(132, 200, 121, 0.45);
+        --cloud2-color2: rgba(109, 173, 104, 0.3);
+        --shadow-color: rgba(0, 0, 0, 0.1);
+        --bg-primary: #eef3ee;
+    }
 
-<div class="page-inner">
-    <div class="glass-block">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% for category, message in messages %}
-            <div class="flash flash--{{ category }}" role="status">
-                <span aria-hidden="true">{{ '✓' if category == 'success' else '!' }}</span>
-                <span>{{ message }}</span>
-            </div>
-            {% endfor %}
-        {% endwith %}
+    /* фон-обложка портала на этой странице заменяем на анимированный градиент */
+    .account2-page.portal-body {
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        min-height: 100vh;
+        overflow-x: hidden;
+        position: relative;
+        transition: background 0.3s ease, color 0.3s ease;
+    }
+    .account2-page::before,
+    .account2-page::after {
+        content: '';
+        position: fixed;
+        z-index: 0;
+        pointer-events: none;
+        transition: background 0.3s ease;
+    }
+    .account2-page::before {
+        top: -50%; left: -50%; width: 200%; height: 200%;
+        background:
+            radial-gradient(ellipse 80% 60% at 30% 20%, var(--cloud1-color1) 0%, transparent 50%),
+            radial-gradient(ellipse 60% 50% at 70% 30%, var(--cloud1-color2) 0%, transparent 50%);
+        animation: a2CloudFloat 20s ease-in-out infinite;
+    }
+    .account2-page::after {
+        top: -30%; left: -30%; width: 160%; height: 160%;
+        background:
+            radial-gradient(ellipse 50% 40% at 60% 25%, var(--cloud2-color1) 0%, transparent 45%),
+            radial-gradient(ellipse 40% 35% at 40% 35%, var(--cloud2-color2) 0%, transparent 40%);
+        animation: a2CloudFloat2 25s ease-in-out infinite reverse;
+    }
+    @keyframes a2CloudFloat {
+        0%, 100% { transform: translate(0, 0) scale(1); }
+        25% { transform: translate(5%, 3%) scale(1.05); }
+        50% { transform: translate(-3%, 5%) scale(0.98); }
+        75% { transform: translate(-5%, -2%) scale(1.02); }
+    }
+    @keyframes a2CloudFloat2 {
+        0%, 100% { transform: translate(0, 0) rotate(0deg); }
+        33% { transform: translate(-4%, 4%) rotate(2deg); }
+        66% { transform: translate(4%, -3%) rotate(-2deg); }
+    }
+    @keyframes a2FadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
 
-        <!-- Профиль -->
-        <div class="account-profile">
-            <div class="account-avatar" aria-hidden="true">
-                {{ full_name[:1] or 'Ж' }}
-            </div>
-            <div class="account-profile__info">
-                <h2 class="account-name">{{ full_name or 'Житель Ходынки' }}</h2>
-                <p class="account-sub">Жилой комплекс «Ходынка»{% if apartment %} · кв. {{ apartment }}{% endif %}</p>
-            </div>
+    .a2-container {
+        position: relative;
+        z-index: 1;
+        padding: 1rem;
+        max-width: 600px;
+        margin: 0 auto;
+        padding-bottom: 40px;
+    }
+
+    /* Верхняя навигация */
+    .a2-top-nav {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 1.5rem;
+        animation: a2FadeInUp 0.5s ease-out;
+    }
+    .a2-nav-close {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 16px;
+        width: 48px; height: 48px;
+        display: flex; align-items: center; justify-content: center;
+        text-decoration: none;
+        color: var(--text-primary);
+        transition: all 0.3s ease;
+        flex-shrink: 0;
+    }
+    .a2-nav-close:hover { background: var(--bg-hover); }
+
+    .a2-header { text-align: center; margin-bottom: 2rem; animation: a2FadeInUp 0.5s ease-out; }
+    .a2-avatar {
+        width: 120px; height: 120px;
+        margin: 0 auto 1rem;
+        border-radius: 50%;
+        border: 3px solid var(--accent);
+        background: linear-gradient(135deg, var(--accent), #4A8544);
+        color: #fff;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 3rem; font-weight: 700;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    }
+    .a2-header h1 { font-size: 1.6rem; font-weight: 700; color: var(--text-primary); }
+    .a2-header p { color: var(--text-secondary); font-size: 0.9rem; margin-top: 4px; }
+
+    .a2-flash {
+        display: flex; align-items: center; gap: 10px;
+        padding: 12px 16px; border-radius: 14px; margin-bottom: 14px;
+        font-size: 0.9rem; font-weight: 600;
+        backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+        animation: a2FadeInUp 0.4s ease-out;
+    }
+    .a2-flash--success { background: rgba(109, 173, 104, 0.18); color: var(--accent); border: 1px solid rgba(109, 173, 104, 0.35); }
+    .a2-flash--error { background: rgba(230, 53, 48, 0.15); color: var(--danger); border: 1px solid rgba(230, 53, 48, 0.3); }
+
+    .a2-card {
+        background: var(--bg-tertiary);
+        backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+        border: 1px solid var(--border-color);
+        border-radius: 24px;
+        padding: 24px;
+        box-shadow: 0 10px 30px var(--shadow-color);
+        margin-bottom: 20px;
+        animation: a2FadeInUp 0.6s ease-out 0.1s both;
+    }
+    .a2-section-title {
+        font-size: 1.1rem; font-weight: 700; color: var(--text-primary);
+        margin-bottom: 1.5rem;
+        display: flex; align-items: center; gap: 10px;
+    }
+    .a2-section-title i { color: var(--accent); }
+
+    .a2-info-row {
+        display: flex; justify-content: space-between; align-items: center;
+        margin-bottom: 15px; padding-bottom: 10px;
+        border-bottom: 1px solid var(--border-color);
+    }
+    .a2-info-row:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+    .a2-info-label { color: var(--text-secondary); font-size: 0.9rem; }
+    .a2-info-value { font-weight: 600; color: var(--text-primary); }
+    .a2-badge { background: var(--accent); color: #fff; padding: 3px 10px; border-radius: 8px; font-size: 0.78rem; font-weight: 600; }
+
+    .a2-form-group { margin-bottom: 20px; }
+    .a2-form-group:last-child { margin-bottom: 0; }
+    .a2-label { display: block; margin-bottom: 8px; color: var(--text-secondary); font-weight: 600; font-size: 0.9rem; }
+    .a2-input {
+        width: 100%; padding: 12px;
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-light);
+        border-radius: 12px;
+        color: var(--text-primary);
+        font-family: inherit; font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+    .a2-input:focus { border-color: var(--accent); outline: none; background: var(--bg-hover); }
+    .a2-input::placeholder { color: var(--text-muted); }
+
+    .a2-btn {
+        display: flex; align-items: center; justify-content: center; gap: 8px;
+        width: 100%; padding: 14px;
+        border: none; border-radius: 12px;
+        font-family: inherit; font-size: 1rem; font-weight: 600;
+        cursor: pointer; transition: all 0.3s ease;
+    }
+    .a2-btn-primary { background: linear-gradient(135deg, #6DAD68 0%, #4A8544 100%); color: #fff; }
+    .a2-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(109, 173, 104, 0.4); }
+    .a2-btn-secondary { background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--border-light); }
+    .a2-btn-secondary:hover { background: var(--bg-hover); }
+    .a2-btn-danger { background: rgba(230, 53, 48, 0.15); color: var(--danger); border: 1px solid rgba(230, 53, 48, 0.3); }
+    .a2-btn-danger:hover { background: rgba(230, 53, 48, 0.25); }
+
+    .a2-toggle-item {
+        display: flex; align-items: center; justify-content: space-between; gap: 14px;
+        padding: 12px; background: var(--bg-secondary);
+        border-radius: 16px; margin-bottom: 10px;
+    }
+    .a2-toggle-title { font-weight: 600; font-size: 0.95rem; color: var(--text-primary); }
+    .a2-toggle-hint { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
+
+    .a2-switch { position: relative; display: inline-block; width: 50px; height: 26px; flex-shrink: 0; }
+    .a2-switch input { opacity: 0; width: 0; height: 0; }
+    .a2-slider {
+        position: absolute; cursor: pointer; inset: 0;
+        background-color: var(--bg-tertiary);
+        border: 1px solid var(--border-light);
+        transition: .3s; border-radius: 34px;
+    }
+    .a2-slider:before {
+        position: absolute; content: ""; height: 20px; width: 20px;
+        left: 3px; bottom: 2px; background-color: #fff;
+        transition: .3s; border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.25);
+    }
+    .a2-switch input:checked + .a2-slider { background-color: var(--accent); }
+    .a2-switch input:checked + .a2-slider:before { transform: translateX(24px); }
+
+    .a2-stack { display: grid; gap: 10px; margin-top: 15px; }
+
+    /* Биометрия (совместимо с webauthn.js) */
+    .biometric-list { margin-top: 12px; display: grid; gap: 8px; }
+    .biometric-row {
+        display: flex; align-items: center; justify-content: space-between; gap: 10px;
+        padding: 10px 12px; background: var(--bg-secondary); border-radius: 12px;
+    }
+    .biometric-info { display: flex; align-items: center; gap: 10px; }
+    .biometric-info i { color: var(--accent); }
+    .biometric-name { font-weight: 600; font-size: 0.9rem; color: var(--text-primary); }
+    .biometric-meta { font-size: 0.78rem; color: var(--text-muted); }
+    .biometric-del {
+        border: none; background: rgba(230, 53, 48, 0.15); color: var(--danger);
+        border-radius: 10px; padding: 6px 10px; cursor: pointer; font-size: 0.8rem; font-weight: 600;
+    }
+    .a2-card .hint { color: var(--text-muted); font-size: 0.85rem; }
+
+    /* Модалка смены пароля */
+    .a2-modal {
+        position: fixed; inset: 0; z-index: 2000;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+        display: flex; align-items: center; justify-content: center;
+        visibility: hidden; opacity: 0; transition: all 0.3s ease;
+        padding: 16px;
+    }
+    .a2-modal.shown { visibility: visible; opacity: 1; }
+    .a2-modal-content {
+        background: var(--bg-tertiary);
+        backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px);
+        border: 1px solid var(--border-light);
+        border-radius: 24px; padding: 24px; width: 100%; max-width: 450px;
+        box-shadow: 0 25px 50px var(--shadow-color);
+    }
+    .a2-modal-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 1.2rem; text-align: center; color: var(--text-primary); }
+
+    @media (max-width: 480px) {
+        .a2-container { padding: 0.8rem; }
+        .a2-header h1 { font-size: 1.4rem; }
+        .a2-card { padding: 18px; }
+        .a2-avatar { width: 96px; height: 96px; font-size: 2.4rem; }
+    }
+</style>
+
+<div class="a2-container">
+    <div class="a2-top-nav">
+        <a href="{{ url_for('portal.dashboard') }}" class="a2-nav-close" aria-label="На главную">
+            <i class="fa-solid fa-house"></i>
+        </a>
+    </div>
+
+    <div class="a2-header">
+        <div class="a2-avatar" aria-hidden="true">{{ (full_name[:1] or 'Ж')|upper }}</div>
+        <h1>{{ full_name or 'Житель Ходынки' }}</h1>
+        <p>Жилой комплекс «Ходынка»{% if apartment %} · кв. {{ apartment }}{% endif %}</p>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+        <div class="a2-flash a2-flash--{{ 'success' if category == 'success' else 'error' }}" role="status">
+            <i class="fa-solid {{ 'fa-circle-check' if category == 'success' else 'fa-circle-exclamation' }}"></i>
+            <span>{{ message }}</span>
         </div>
+        {% endfor %}
+    {% endwith %}
 
-        <!-- Данные аккаунта -->
-        <h2 class="section-title">Данные аккаунта</h2>
-        <div class="account-list">
-            <div class="account-row">
-                <span class="account-row__label">Имя</span>
-                <span class="account-row__value">{{ full_name or '—' }}</span>
-            </div>
-            {% if apartment %}
-            <div class="account-row">
-                <span class="account-row__label">Квартира</span>
-                <span class="account-row__value">{{ apartment }}</span>
-            </div>
-            {% endif %}
-            <div class="account-row">
-                <span class="account-row__label">Телефон</span>
-                <span class="account-row__value">{{ phone or '—' }}</span>
-            </div>
-            <div class="account-row">
-                <span class="account-row__label">Статус</span>
-                <span class="status-badge status-badge--done">Подтверждён</span>
-            </div>
+    <!-- Данные аккаунта -->
+    <div class="a2-card">
+        <div class="a2-section-title"><i class="fa-solid fa-address-card"></i> Данные аккаунта</div>
+        <div class="a2-info-row">
+            <span class="a2-info-label">Имя</span>
+            <span class="a2-info-value">{{ full_name or '—' }}</span>
         </div>
-
-        <style>
-            .acc-form { margin-bottom: 8px; }
-            .acc-field { margin-bottom: 12px; }
-            .acc-field label { display: block; font-size: 13px; font-weight: 600; color: #5a5f7a; margin-bottom: 6px; }
-            .acc-field input {
-                width: 100%; padding: 12px 14px; border-radius: 12px; border: 1px solid rgba(20,24,60,0.12);
-                background: #f4f6fb; color: #1b1f3b; font-family: inherit; font-size: 15px; outline: none;
-            }
-            .acc-field input:focus { border-color: #6DAD68; }
-            .acc-btn {
-                border: none; cursor: pointer; font-family: inherit; font-weight: 700; font-size: 14px;
-                padding: 12px 18px; border-radius: 12px; background: linear-gradient(135deg,#6DAD68,#4A8544); color: #fff;
-            }
-            .acc-btn:active { transform: scale(0.97); }
-            .acc-toggle { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
-            .acc-toggle__text h3 { font-size: 15px; font-weight: 700; color: #1b1f3b; margin-bottom: 2px; }
-            .acc-toggle__text p { font-size: 13px; color: #6a6f8a; }
-            .switch { position: relative; width: 50px; height: 28px; flex-shrink: 0; }
-            .switch input { opacity: 0; width: 0; height: 0; }
-            .switch .track { position: absolute; inset: 0; background: #cfd3e6; border-radius: 999px; transition: background 200ms; cursor: pointer; }
-            .switch .track::before { content: ''; position: absolute; height: 22px; width: 22px; left: 3px; top: 3px; background: #fff; border-radius: 50%; transition: transform 200ms; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-            .switch input:checked + .track { background: #6DAD68; }
-            .switch input:checked + .track::before { transform: translateX(22px); }
-        </style>
-
-        <!-- Редактировать профиль -->
-        <h2 class="section-title">Редактировать профиль</h2>
-        <form class="acc-form" method="post" action="{{ url_for('portal.account_profile') }}">
-            <div class="acc-field"><label for="f-surname">Фамилия</label><input type="text" id="f-surname" name="surname" value="{{ surname or '' }}" required></div>
-            <div class="acc-field"><label for="f-name">Имя</label><input type="text" id="f-name" name="name" value="{{ name or '' }}" required></div>
-            <div class="acc-field"><label for="f-lastname">Отчество</label><input type="text" id="f-lastname" name="lastname" value="{{ lastname or '' }}"></div>
-            <div class="acc-field"><label for="f-apt">Квартира</label><input type="text" id="f-apt" name="apartment" value="{{ apartment or '' }}"></div>
-            <button type="submit" class="acc-btn">Сохранить</button>
-        </form>
-
-        <!-- Приватность -->
-        <h2 class="section-title">Приватность</h2>
-        <div class="account-list">
-            <div class="account-row account-row--block">
-                <form method="post" action="{{ url_for('portal.account_privacy') }}" id="privacyForm" style="width:100%;">
-                    <div class="acc-toggle">
-                        <div class="acc-toggle__text">
-                            <h3>Заблокировать номер</h3>
-                            <p>Ваш телефон нельзя будет найти или увидеть в системе.</p>
-                        </div>
-                        <label class="switch">
-                            <input type="checkbox" name="phone_hidden" id="phoneHidden" {{ 'checked' if phone_hidden }} onchange="document.getElementById('privacyForm').submit();">
-                            <span class="track"></span>
-                        </label>
-                    </div>
-                </form>
-            </div>
+        {% if apartment %}
+        <div class="a2-info-row">
+            <span class="a2-info-label">Квартира</span>
+            <span class="a2-info-value">{{ apartment }}</span>
         </div>
-
-        <!-- Безопасность -->
-        <h2 class="section-title">Безопасность</h2>
-        <form class="acc-form" method="post" action="{{ url_for('portal.account_password') }}">
-            <div class="acc-field"><label for="p-cur">Текущий пароль</label><input type="password" id="p-cur" name="current" autocomplete="current-password" required></div>
-            <div class="acc-field"><label for="p-new">Новый пароль</label><input type="password" id="p-new" name="new" autocomplete="new-password" required></div>
-            <div class="acc-field"><label for="p-new2">Повторите новый пароль</label><input type="password" id="p-new2" name="new2" autocomplete="new-password" required></div>
-            <button type="submit" class="acc-btn">Изменить пароль</button>
-        </form>
-
-        <!-- Биометрия -->
-        <h2 class="section-title">Вход по биометрии</h2>
-        <div class="account-list">
-            <div class="account-row account-row--block">
-                <div class="biometric-wrap">
-                    <button type="button" class="btn" id="biometricEnrollBtn">
-                        <i class="fa-solid fa-fingerprint"></i> Включить Face ID / Touch ID
-                    </button>
-                    <div id="biometricList" class="biometric-list"></div>
-                </div>
-            </div>
+        {% endif %}
+        <div class="a2-info-row">
+            <span class="a2-info-label">Телефон</span>
+            <span class="a2-info-value">{{ phone or '—' }}</span>
         </div>
-
-        <!-- Действия -->
-        <h2 class="section-title">Действия</h2>
-        <div class="sub-grid">
-            <a class="sub-card" href="{{ url_for('portal.dashboard') }}">
-                <span class="sub-card__icon" aria-hidden="true">🏠</span>
-                <span class="sub-card__body">
-                    <h3>На главную</h3>
-                    <p>Вернуться к сервисам</p>
-                </span>
-                <span class="sub-card__chevron" aria-hidden="true">→</span>
-            </a>
-            <button type="button" class="sub-card" id="openSettings">
-                <span class="sub-card__icon" aria-hidden="true">⚙️</span>
-                <span class="sub-card__body">
-                    <h3>Настройки</h3>
-                    <p>Уведомления и предпочтения</p>
-                </span>
-                <span class="sub-card__chevron" aria-hidden="true">→</span>
-            </button>
-            <a class="sub-card sub-card--danger" href="{{ url_for('auth.logout') }}">
-                <span class="sub-card__icon" aria-hidden="true">↪️</span>
-                <span class="sub-card__body">
-                    <h3>Выйти</h3>
-                    <p>Завершить сессию</p>
-                </span>
-                <span class="sub-card__chevron" aria-hidden="true">→</span>
-            </a>
+        <div class="a2-info-row">
+            <span class="a2-info-label">Статус</span>
+            <span class="a2-badge">Подтверждён</span>
         </div>
     </div>
+
+    <!-- Редактировать профиль -->
+    <div class="a2-card">
+        <div class="a2-section-title"><i class="fa-solid fa-user-pen"></i> Редактировать профиль</div>
+        <form method="post" action="{{ url_for('portal.account_profile') }}">
+            <div class="a2-form-group">
+                <label class="a2-label" for="f-surname">Фамилия</label>
+                <input class="a2-input" type="text" id="f-surname" name="surname" value="{{ surname or '' }}" required>
+            </div>
+            <div class="a2-form-group">
+                <label class="a2-label" for="f-name">Имя</label>
+                <input class="a2-input" type="text" id="f-name" name="name" value="{{ name or '' }}" required>
+            </div>
+            <div class="a2-form-group">
+                <label class="a2-label" for="f-lastname">Отчество</label>
+                <input class="a2-input" type="text" id="f-lastname" name="lastname" value="{{ lastname or '' }}">
+            </div>
+            <div class="a2-form-group">
+                <label class="a2-label" for="f-apt">Квартира</label>
+                <input class="a2-input" type="text" id="f-apt" name="apartment" value="{{ apartment or '' }}">
+            </div>
+            <button type="submit" class="a2-btn a2-btn-primary">
+                <i class="fa-solid fa-floppy-disk"></i> Сохранить профиль
+            </button>
+        </form>
+    </div>
+
+    <!-- Безопасность и приватность -->
+    <div class="a2-card">
+        <div class="a2-section-title"><i class="fa-solid fa-shield-halved"></i> Безопасность и приватность</div>
+
+        <form method="post" action="{{ url_for('portal.account_privacy') }}" id="privacyForm">
+            <div class="a2-toggle-item">
+                <div class="a2-toggle-info">
+                    <div class="a2-toggle-title">Заблокировать номер</div>
+                    <div class="a2-toggle-hint">Ваш телефон нельзя будет найти в системе</div>
+                </div>
+                <label class="a2-switch">
+                    <input type="checkbox" name="phone_hidden" id="phoneHidden" {{ 'checked' if phone_hidden }}
+                           onchange="document.getElementById('privacyForm').submit();">
+                    <span class="a2-slider"></span>
+                </label>
+            </div>
+        </form>
+
+        <div class="a2-toggle-item">
+            <div class="a2-toggle-info">
+                <div class="a2-toggle-title">Светлая тема</div>
+                <div class="a2-toggle-hint">Переключить оформление страницы</div>
+            </div>
+            <label class="a2-switch">
+                <input type="checkbox" id="themeToggle">
+                <span class="a2-slider"></span>
+            </label>
+        </div>
+
+        <div class="a2-stack">
+            <button type="button" class="a2-btn a2-btn-secondary" id="changePassBtn">
+                <i class="fa-solid fa-key"></i> Изменить пароль
+            </button>
+        </div>
+    </div>
+
+    <!-- Вход по биометрии -->
+    <div class="a2-card">
+        <div class="a2-section-title"><i class="fa-solid fa-fingerprint"></i> Вход по биометрии</div>
+        <button type="button" class="a2-btn a2-btn-secondary" id="biometricEnrollBtn">
+            <i class="fa-solid fa-fingerprint"></i> Включить Face ID / Touch ID
+        </button>
+        <div id="biometricList" class="biometric-list"></div>
+    </div>
+
+    <!-- Выход -->
+    <a href="{{ url_for('auth.logout') }}" class="a2-btn a2-btn-danger">
+        <i class="fa-solid fa-right-from-bracket"></i> Выйти из аккаунта
+    </a>
 </div>
 
-<!-- Bottom sheet: настройки -->
-<div class="overlay" id="settingsOverlay"></div>
-<div class="bottom-sheet" id="settingsSheet" role="dialog" aria-modal="true" aria-labelledby="settingsTitle" aria-hidden="true">
-    <div class="bottom-sheet__handle"></div>
-    <div class="bottom-sheet__header"><h2 id="settingsTitle">Настройки</h2></div>
-    <div class="bottom-sheet__body">
-        <div class="info-item">
-            <h3>Уведомления</h3>
-            <p>Скоро: настройка пуш-уведомлений о статусе заявок.</p>
-        </div>
-        <div class="info-item">
-            <h3>Предпочтения</h3>
-            <p>Скоро: темы оформления и язык интерфейса.</p>
-        </div>
+<!-- Модалка: смена пароля -->
+<div class="a2-modal" id="passModal">
+    <div class="a2-modal-content">
+        <div class="a2-modal-title">Смена пароля</div>
+        <form method="post" action="{{ url_for('portal.account_password') }}">
+            <div class="a2-form-group">
+                <label class="a2-label" for="p-cur">Текущий пароль</label>
+                <input class="a2-input" type="password" id="p-cur" name="current" autocomplete="current-password" required>
+            </div>
+            <div class="a2-form-group">
+                <label class="a2-label" for="p-new">Новый пароль</label>
+                <input class="a2-input" type="password" id="p-new" name="new" autocomplete="new-password" required>
+            </div>
+            <div class="a2-form-group">
+                <label class="a2-label" for="p-new2">Повторите пароль</label>
+                <input class="a2-input" type="password" id="p-new2" name="new2" autocomplete="new-password" required>
+            </div>
+            <div class="a2-stack">
+                <button type="submit" class="a2-btn a2-btn-primary">Сохранить</button>
+                <button type="button" class="a2-btn a2-btn-secondary" id="closePassBtn">Отмена</button>
+            </div>
+        </form>
     </div>
 </div>
 {% endblock %}
@@ -180,29 +425,34 @@
 <script src="{{ url_for('static', filename='js/webauthn.js') }}"></script>
 <script>
     (function () {
-        var overlay = document.getElementById('settingsOverlay');
-        var sheet = document.getElementById('settingsSheet');
-        var openBtn = document.getElementById('openSettings');
+        var body = document.body;
 
-        function close() {
-            sheet.classList.remove('open');
-            overlay.classList.remove('open');
-            sheet.setAttribute('aria-hidden', 'true');
-            document.body.style.overflow = '';
+        // ── Тема (только для страницы аккаунта, хранится отдельно) ──
+        var THEME_KEY = 'accountTheme';
+        var themeToggle = document.getElementById('themeToggle');
+        function applyTheme(theme) {
+            body.setAttribute('data-theme', theme);
+            if (themeToggle) themeToggle.checked = (theme === 'light');
         }
-
-        if (openBtn) {
-            openBtn.addEventListener('click', function () {
-                sheet.classList.add('open');
-                overlay.classList.add('open');
-                sheet.setAttribute('aria-hidden', 'false');
-                document.body.style.overflow = 'hidden';
+        applyTheme(localStorage.getItem(THEME_KEY) || 'dark');
+        if (themeToggle) {
+            themeToggle.addEventListener('change', function () {
+                var theme = themeToggle.checked ? 'light' : 'dark';
+                localStorage.setItem(THEME_KEY, theme);
+                applyTheme(theme);
             });
         }
-        if (overlay) overlay.addEventListener('click', close);
-        document.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape') close();
-        });
+
+        // ── Модалка смены пароля ──
+        var modal = document.getElementById('passModal');
+        var openBtn = document.getElementById('changePassBtn');
+        var closeBtn = document.getElementById('closePassBtn');
+        function openModal() { modal.classList.add('shown'); }
+        function closeModal() { modal.classList.remove('shown'); }
+        if (openBtn) openBtn.addEventListener('click', openModal);
+        if (closeBtn) closeBtn.addEventListener('click', closeModal);
+        if (modal) modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
+        document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeModal(); });
     })();
 </script>
 {% endblock %}
