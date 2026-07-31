@@ -7,6 +7,8 @@ from db_settings import db, bcrypt, login_manager, people
 from blueprints.auth import auth
 from blueprints.portal import portal
 from blueprints.webauthn import webauthn_bp
+from blueprints.admin import admin
+from blueprints.security import security
 
 
 app = Flask(__name__)
@@ -33,6 +35,8 @@ def load_user(user_id):
 app.register_blueprint(auth)
 app.register_blueprint(portal)
 app.register_blueprint(webauthn_bp)
+app.register_blueprint(admin)
+app.register_blueprint(security)
 
 
 def _sync_schema():

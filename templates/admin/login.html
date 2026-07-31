@@ -1,0 +1,21 @@
+{% extends "staff_base.html" %}
+{% block title %}Админка — вход{% endblock %}
+{% block brand_icon %}fa-solid fa-gauge-high{% endblock %}
+{% block area %}Админ{% endblock %}
+
+{% block content %}
+<div class="login-wrap">
+    <div class="login-card">
+        <div class="login-ico">🛠️</div>
+        <h1>Панель администратора</h1>
+        <p class="sub">Введите мастер-пароль для доступа</p>
+        <form method="post">
+            <div class="field">
+                <label for="password">Пароль</label>
+                <input type="password" id="password" name="password" autocomplete="current-password" autofocus required>
+            </div>
+            <button type="submit" class="btn btn--primary">Войти</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
