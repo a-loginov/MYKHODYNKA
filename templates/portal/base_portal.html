@@ -12,25 +12,6 @@
         {% block content %}{% endblock %}
     </main>
 
-    <nav class="bottom-nav" aria-label="Основная навигация">
-        <a class="bottom-nav__item" href="{{ url_for('portal.dashboard') }}" data-nav="home">
-            <span class="bottom-nav__icon" aria-hidden="true">🏠</span>
-            <span class="bottom-nav__label">Главная</span>
-        </a>
-        <a class="bottom-nav__item" href="{{ url_for('portal.requests_page') }}" data-nav="requests">
-            <span class="bottom-nav__icon" aria-hidden="true">🔧</span>
-            <span class="bottom-nav__label">Заявки</span>
-        </a>
-        <a class="bottom-nav__item" href="{{ url_for('portal.passes') }}" data-nav="passes">
-            <span class="bottom-nav__icon" aria-hidden="true">🚪</span>
-            <span class="bottom-nav__label">Пропуска</span>
-        </a>
-        <a class="bottom-nav__item" href="{{ url_for('portal.messages') }}" data-nav="messages">
-            <span class="bottom-nav__icon" aria-hidden="true">💬</span>
-            <span class="bottom-nav__label">Сообщения</span>
-        </a>
-    </nav>
-
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     {% block scripts %}{% endblock %}
 </body>

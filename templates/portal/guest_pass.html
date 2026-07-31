@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MYKHODYNKA — Пропуск гостя</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+        body {
+            background: url('/static/img/apps-wallpaper.svg') top center no-repeat, #f4f6fb;
+            background-size: cover;
+            background-position: top center;
+            background-repeat: no-repeat;
+            min-height: 100vh;
+            color: #1b1f3b;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+        .guest-wrap { width: 100%; max-width: 430px; }
+        .guest-head { text-align: center; margin: 40px 0 24px; }
+        .guest-logo { font-size: 46px; margin-bottom: 12px; }
+        .guest-title { font-size: 26px; font-weight: 800; color: #fff; text-shadow: 0 2px 6px rgba(0,0,0,0.35); }
+
+        .card {
+            background: #fff;
+            border-radius: 22px;
+            padding: 22px;
+            box-shadow: 0 8px 25px rgba(20, 24, 60, 0.12);
+            margin-bottom: 16px;
+        }
+        .card h3 { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #9a9eb8; margin-bottom: 10px; }
+
+        .status { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 16px; font-weight: 700; font-size: 15px; margin-bottom: 16px; }
+        .status--new { background: #eef0ff; color: #4446E1; }
+        .status--approved { background: #e6f9ee; color: #1c9d58; }
+        .status--done { background: #e6f9ee; color: #1c9d58; }
+        .status--rejected { background: #ffecec; color: #dc3545; }
+
+        .guest-name { font-size: 22px; font-weight: 800; color: #1b1f3b; margin-bottom: 4px; }
+        .guest-category { font-size: 14px; color: #6a6f8a; margin-bottom: 18px; }
+
+        .detail { display: flex; justify-content: space-between; gap: 16px; padding: 12px 0; border-bottom: 1px solid #f0f2f8; font-size: 15px; }
+        .detail:last-child { border-bottom: none; }
+        .detail-label { color: #9a9eb8; }
+        .detail-value { font-weight: 600; color: #1b1f3b; text-align: right; }
+
+        .reminder { display: flex; align-items: center; gap: 14px; background: #fff8e6; border-radius: 18px; padding: 16px; }
+        .reminder i { font-size: 26px; color: #e8a400; flex-shrink: 0; }
+        .reminder h3 { font-size: 14px; font-weight: 700; color: #1b1f3b; margin-bottom: 3px; }
+        .reminder p { font-size: 13px; color: #6a6f8a; line-height: 1.4; }
+
+        .error-box { background: #fff; border-radius: 22px; padding: 30px; text-align: center; color: #6a6f8a; }
+        .error-box .big { font-size: 40px; margin-bottom: 12px; }
+
+        @media (max-width: 600px) {
+            body { padding: 12px; }
+            .guest-title { font-size: 22px; }
+            .guest-head { margin-top: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="guest-wrap">
+        {% if error %}
+            <div class="error-box">
+                <div class="big">🔍</div>
+                <p>Пропуск не найден.<br>Проверьте ссылку или обратитесь к тому, кто её отправил.</p>
+            </div>
+        {% else %}
+            <div class="guest-head">
+                <div class="guest-logo">🏠</div>
+                <div class="guest-title">ЖК «Ходынка»</div>
+            </div>
+
+            <div class="status status--{{ pass_info.status }}">
+                <i class="fa-solid {{ 'fa-circle-check' if pass_info.status in ('approved','done') else 'fa-clock' if pass_info.status == 'new' else 'fa-circle-xmark' }}"></i>
+                <span>{{ pass_info.status_label }}</span>
+            </div>
+
+            <div class="card">
+                <div class="guest-name">{{ pass_info.guest_name }}</div>
+                <div class="guest-category">{{ pass_info.category_label }} · пропуск №{{ pass_info.number }}</div>
+
+                <div class="detail">
+                    <span class="detail-label">Транспорт</span>
+                    <span class="detail-value">{{ pass_info.transport }}</span>
+                </div>
+                {% if pass_info.visit_at %}
+                <div class="detail">
+                    <span class="detail-label">Время визита</span>
+                    <span class="detail-value">{{ pass_info.visit_at }}</span>
+                </div>
+                {% endif %}
+                {% if pass_info.guest_phone %}
+                <div class="detail">
+                    <span class="detail-label">Телефон</span>
+                    <span class="detail-value">{{ pass_info.guest_phone }}</span>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="reminder">
+                <i class="fa-solid fa-id-card"></i>
+                <div>
+                    <h3>Не забудьте документы</h3>
+                    <p>Для входа в дом понадобится паспорт или документ, удостоверяющий личность.</p>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

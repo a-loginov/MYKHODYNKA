@@ -95,6 +95,13 @@
     .pass-submit:hover { transform: translateY(-1px); }
     .pass-submit:active { transform: scale(0.97); }
 
+    .pass-link-btn {
+        padding: 8px 14px; border-radius: 12px; border: 1px solid rgba(20,24,60,0.12);
+        background: #fff; color: #4446E1; font-family: inherit; font-size: 13px; font-weight: 700;
+        cursor: pointer; transition: all 200ms var(--ease-out);
+    }
+    .pass-link-btn:hover { background: #eef0ff; border-color: #4446E1; }
+
     .empty-state2 { text-align: center; color: #9a9eb8; padding: 40px 20px; font-size: 14px; }
     .status-pill { padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; }
     .status-pill--new { color: #4446E1; background: rgba(68,70,225,0.12); }
@@ -209,6 +216,10 @@
                     <span>{{ p.category_label }}</span>
                     {% if p.visit_at %}<span>·</span><span>{{ p.visit_at }}</span>{% endif %}
                 </div>
+                <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(20,24,60,0.08); display: flex; gap: 8px;">
+                    <button type="button" class="pass-link-btn" data-pass-id="{{ p.id }}">🔗 Ссылка для гостя</button>
+                    <button type="button" class="pass-link-btn" data-pass-id="{{ p.id }}" data-open>Открыть</button>
+                </div>
             </div>
             {% endfor %}
         {% else %}
@@ -295,6 +306,24 @@
         }
         if (overlay) overlay.addEventListener('click', closeSheet);
         document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeSheet(); });
+
+        // Ссылка для гостя
+        var baseUrl = '{{ url_for("portal.guest_pass", uuid="PASS_ID", _external=True) }}'.replace('PASS_ID', '');
+        document.querySelectorAll('.pass-link-btn').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var id = btn.getAttribute('data-pass-id');
+                var link = baseUrl + id;
+                if (btn.hasAttribute('data-open')) {
+                    window.open(link, '_blank', 'noopener');
+                } else {
+                    navigator.clipboard.writeText(link).then(function () {
+                        var old = btn.textContent;
+                        btn.textContent = '✓ Скопировано';
+                        setTimeout(function () { btn.textContent = old; }, 1500);
+                    });
+                }
+            });
+        });
     })();
 </script>
 {% endblock %}
