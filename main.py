@@ -32,6 +32,7 @@ def load_user(user_id):
 
 app.register_blueprint(auth)
 app.register_blueprint(portal)
+app.register_blueprint(webauthn_bp)
 
 
 def _sync_schema():
@@ -52,6 +53,9 @@ def _sync_schema():
             ))
             db.session.execute(text(
                 "ALTER TABLE people ALTER COLUMN group_letter DROP NOT NULL"
+            ))
+            db.session.execute(text(
+                "ALTER TABLE guest_pass ADD COLUMN IF NOT EXISTS arrived_at TIMESTAMP"
             ))
             db.session.commit()
         except Exception as exc:  # noqa: BLE001

@@ -1707,3 +1707,85 @@ hr {
   .account-avatar { width: 60px; height: 60px; font-size: 26px; }
   .account-name { font-size: 19px; }
 }
+
+/* ───── Биометрия (WebAuthn) ───── */
+.btn--biometric {
+  margin-top: 12px;
+  background: rgba(20, 24, 60, 0.06);
+  color: #1b1f3b;
+  box-shadow: none;
+  border: 1.5px solid rgba(20, 24, 60, 0.12);
+}
+.btn--biometric:hover {
+  background: rgba(20, 24, 60, 0.1);
+  box-shadow: none;
+}
+.btn--biometric i { margin-right: 8px; }
+
+.account-row--block {
+  display: block;
+  border-bottom: none;
+}
+.biometric-wrap { display: flex; flex-direction: column; gap: 14px; }
+.biometric-wrap .btn { width: 100%; }
+
+.biometric-list { display: flex; flex-direction: column; gap: 10px; }
+.biometric-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: #f4f6fb;
+  border: 1px solid rgba(20, 24, 60, 0.08);
+  border-radius: 14px;
+  padding: 12px 14px;
+}
+.biometric-info { display: flex; align-items: center; gap: 12px; }
+.biometric-info > i { font-size: 22px; color: #4446E1; }
+.biometric-name { font-size: 15px; font-weight: 600; color: #1b1f3b; }
+.biometric-del {
+  border: none;
+  background: transparent;
+  color: #b0b4cf;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+  transition: color 160ms var(--ease-out), background 160ms var(--ease-out);
+}
+.biometric-del:hover { color: #dc3545; background: #ffecec; }
+.biometric-list .hint { margin: 0; }
+
+/* ───── Уведомления ───── */
+.notif-list { display: flex; flex-direction: column; }
+.notif-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px;
+  border-radius: 16px;
+  background: #f4f6fb;
+  border: 1px solid rgba(20, 24, 60, 0.06);
+  margin-bottom: 10px;
+  position: relative;
+}
+.notif-item--unread { background: #eef0ff; border-color: rgba(68, 70, 225, 0.2); }
+.notif-icon {
+  width: 42px; height: 42px; flex: 0 0 auto;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 12px;
+  background: #fff;
+  color: #4446E1;
+  font-size: 18px;
+  box-shadow: 0 2px 8px rgba(20, 24, 60, 0.08);
+}
+.notif-body { flex: 1; min-width: 0; }
+.notif-title { font-size: 15px; font-weight: 700; color: #1b1f3b; }
+.notif-text { font-size: 13px; color: #6a6f8a; line-height: 1.45; margin-top: 3px; }
+.notif-time { font-size: 12px; color: #b0b4cf; margin-top: 6px; }
+.notif-dot {
+  width: 10px; height: 10px; flex: 0 0 auto;
+  border-radius: 50%;
+  background: #4446E1;
+  margin-top: 6px;
+}

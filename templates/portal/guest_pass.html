@@ -56,6 +56,37 @@
         .reminder h3 { font-size: 14px; font-weight: 700; color: #1b1f3b; margin-bottom: 3px; }
         .reminder p { font-size: 13px; color: #6a6f8a; line-height: 1.4; }
 
+        .arrive-card {
+            display: flex; align-items: center; gap: 14px;
+            background: #fff; border-radius: 18px; padding: 16px;
+            box-shadow: 0 8px 25px rgba(20, 24, 60, 0.12);
+            margin-bottom: 16px;
+        }
+        .arrive-icon { font-size: 26px; color: #4446E1; flex-shrink: 0; }
+        .arrive-card h3 { font-size: 14px; font-weight: 700; color: #1b1f3b; }
+        .arrive-card p { font-size: 12px; color: #6a6f8a; line-height: 1.4; }
+        .arrive-btn {
+            margin-left: auto; flex-shrink: 0;
+            border: none; cursor: pointer;
+            background: linear-gradient(135deg, #4446E1, #2E3192); color: #fff;
+            border-radius: 14px; padding: 12px 14px;
+            font-size: 13px; font-weight: 700; font-family: inherit;
+            box-shadow: 0 6px 20px rgba(68, 70, 225, 0.3);
+            transition: transform 160ms var(--ease-out), opacity 200ms var(--ease-out);
+        }
+        .arrive-btn:hover { opacity: 0.92; }
+        .arrive-btn:active { transform: scale(0.96); }
+        .arrive-btn:disabled { opacity: 0.6; cursor: default; }
+        .arrive-btn i { margin-right: 6px; }
+
+        .arrived-ok {
+            display: flex; align-items: center; gap: 10px;
+            background: #e6f9ee; color: #1c9d58;
+            border-radius: 16px; padding: 14px 16px; font-weight: 700; font-size: 14px;
+            margin-bottom: 16px;
+        }
+        .arrived-ok i { font-size: 20px; }
+
         .error-box { background: #fff; border-radius: 22px; padding: 30px; text-align: center; color: #6a6f8a; }
         .error-box .big { font-size: 40px; margin-bottom: 12px; }
 
@@ -80,9 +111,29 @@
             </div>
 
             <div class="status status--{{ pass_info.status }}">
-                <i class="fa-solid {{ 'fa-circle-check' if pass_info.status in ('approved','done') else 'fa-clock' if pass_info.status == 'new' else 'fa-circle-xmark' }}"></i>
+                <i class="fa-solid {{ 'fa-circle-check' if pass_info.status in ('approved','done') else 'fa-clock' if pass_info.status in ('new',) else 'fa-bell' if pass_info.status == 'arrived' else 'fa-circle-xmark' }}"></i>
                 <span>{{ pass_info.status_label }}</span>
             </div>
+
+            {% if pass_info.status != 'arrived' and pass_info.status not in ('rejected',) %}
+            <div class="arrive-card">
+                <div class="arrive-icon"><i class="fa-solid fa-bell"></i></div>
+                <div>
+                    <h3>Вы на месте?</h3>
+                    <p>Сообщите жителю, что вы уже у входа — ему придёт уведомление.</p>
+                </div>
+                <button type="button" class="arrive-btn" id="arrivedBtn">
+                    <i class="fa-solid fa-bell"></i> Я прибыл(а)
+                </button>
+            </div>
+            {% endif %}
+
+            {% if pass_info.status == 'arrived' %}
+            <div class="arrived-ok">
+                <i class="fa-solid fa-circle-check"></i>
+                <span>Житель уведомлён. Вас уже ждут!</span>
+            </div>
+            {% endif %}
 
             <div class="card">
                 <div class="guest-name">{{ pass_info.guest_name }}</div>
@@ -115,5 +166,32 @@
             </div>
         {% endif %}
     </div>
+
+    <script>
+        (function () {
+            var btn = document.getElementById('arrivedBtn');
+            if (!btn) return;
+            btn.addEventListener('click', function () {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Отправляем…';
+                fetch('/p/{{ pass_info.id }}/arrived', { method: 'POST' })
+                    .then(function (r) { return r.json(); })
+                    .then(function (res) {
+                        if (res.error) {
+                            alert(res.error);
+                            btn.disabled = false;
+                            btn.innerHTML = '<i class="fa-solid fa-bell"></i> Я прибыл(а)';
+                            return;
+                        }
+                        location.reload();
+                    })
+                    .catch(function () {
+                        alert('Не удалось отправить. Проверьте соединение.');
+                        btn.disabled = false;
+                        btn.innerHTML = '<i class="fa-solid fa-bell"></i> Я прибыл(а)';
+                    });
+            });
+        })();
+    </script>
 </body>
 </html>

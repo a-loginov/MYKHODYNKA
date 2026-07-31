@@ -2,47 +2,52 @@
 
 {% from "portal/_macros.html" import page_cover %}
 
-{% block title %}MYKHODYNKA — Сообщения{% endblock %}
+{% block title %}MYKHODYNKA — Уведомления{% endblock %}
 
 {% block content %}
-{{ page_cover('Сообщения', 'Чаты и уведомления', '💬') }}
+{{ page_cover('Уведомления', 'События и сообщения', '🔔') }}
 
 <div class="page-inner">
     <div class="glass-block">
-        <div class="sub-grid">
-            <div class="sub-card">
-                <span class="sub-card__icon" aria-hidden="true">🏢</span>
-                <span class="sub-card__body">
-                    <h3>Чат с УК</h3>
-                    <p>Оперативная переписка</p>
-                </span>
-                <span class="sub-card__chevron" aria-hidden="true">→</span>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+            <div class="flash flash--{{ category }}" role="status">
+                <span aria-hidden="true">{{ '✓' if category == 'success' else '!' }}</span>
+                <span>{{ message }}</span>
             </div>
-            <div class="sub-card">
-                <span class="sub-card__icon" aria-hidden="true">📰</span>
-                <span class="sub-card__body">
-                    <h3>Новости дома</h3>
-                    <p>Объявления, отключения, плановые работы</p>
-                </span>
-                <span class="sub-card__chevron" aria-hidden="true">→</span>
+            {% endfor %}
+        {% endwith %}
+
+        {% if notifications %}
+            <div class="notif-list">
+                {% for n in notifications %}
+                <div class="notif-item {{ 'notif-item--unread' if not n.is_read }}">
+                    <div class="notif-icon">
+                        <i class="fa-solid {{ 'fa-user-clock' if n.type == 'guest_arrived' else 'fa-bell' }}"></i>
+                    </div>
+                    <div class="notif-body">
+                        <div class="notif-title">{{ n.title }}</div>
+                        {% if n.body %}<div class="notif-text">{{ n.body }}</div>{% endif %}
+                        <div class="notif-time">{{ n.created }}</div>
+                    </div>
+                    {% if not n.is_read %}<span class="notif-dot"></span>{% endif %}
+                </div>
+                {% endfor %}
             </div>
-            <div class="sub-card">
-                <span class="sub-card__icon" aria-hidden="true">🔔</span>
-                <span class="sub-card__body">
-                    <h3>Уведомления</h3>
-                    <p>Статус заявок, ответы, пропуска</p>
-                </span>
-                <span class="sub-card__chevron" aria-hidden="true">→</span>
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-state__icon" aria-hidden="true">🔕</div>
+                <p>Уведомлений пока нет.<br>Когда гость сообщит о прибытии или обновится заявка — вы увидите это здесь.</p>
             </div>
-            <div class="sub-card">
-                <span class="sub-card__icon" aria-hidden="true">👥</span>
-                <span class="sub-card__body">
-                    <h3>Чат жителей</h3>
-                    <p>Общий чат дома</p>
-                </span>
-                <span class="sub-card__chevron" aria-hidden="true">→</span>
-            </div>
-        </div>
+        {% endif %}
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        fetch('/notifications/read', { method: 'POST' }).catch(function () {});
+    });
+</script>
 {% endblock %}

@@ -1,8 +1,8 @@
 import re
 
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from flask_login import login_user, logout_user, login_required, current_user
-from db_settings import db, people
+from db_settings import db, people, WebAuthnCredential
 
 auth = Blueprint('auth', __name__, template_folder='../templates/auth')
 
@@ -21,6 +21,15 @@ def login():
     if current_user.is_authenticated:
         return redirect(url_for('portal.dashboard'))
 
+    credential_id = None
+    remembered_phone = request.args.get('remember') or session.get('last_phone')
+    if remembered_phone:
+        user = people.query.filter_by(phone=_normalize_phone(remembered_phone)).first()
+        if user:
+            cred = WebAuthnCredential.query.filter_by(user_id=user.id).first()
+            if cred:
+                credential_id = cred.credential_id
+
     if request.method == 'POST':
         phone = _normalize_phone(request.form.get('phone'))
         password = request.form.get('password') or ''
@@ -29,12 +38,14 @@ def login():
         if not user or not user.check_password(password):
             flash('Неверный номер телефона или пароль', 'error')
             return render_template('auth/login.html',
-                                   phone=request.form.get('phone'))
+                                   phone=request.form.get('phone'),
+                                   credential_id=credential_id)
 
         login_user(user)
+        session['last_phone'] = phone
         return redirect(request.args.get('next') or url_for('portal.dashboard'))
 
-    return render_template('auth/login.html')
+    return render_template('auth/login.html', credential_id=credential_id)
 
 
 @auth.route('/register', methods=['GET', 'POST'])

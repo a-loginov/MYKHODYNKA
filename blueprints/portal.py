@@ -1,7 +1,7 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify, session
 from flask_login import current_user, login_required
 
-from db_settings import db, ServiceRequest, GuestPass
+from db_settings import db, ServiceRequest, GuestPass, Notification, people
 
 portal = Blueprint('portal', __name__, template_folder='../templates/portal')
 
@@ -28,7 +28,7 @@ GUEST_CATEGORY_TITLES = {
     "permanent": "Постоянный",
 }
 
-GUEST_STATUS_LABELS = {"new": "Ожидает", "approved": "Разрешён", "done": "Прошёл", "rejected": "Отклонён"}
+GUEST_STATUS_LABELS = {"new": "Ожидает", "approved": "Разрешён", "done": "Прошёл", "rejected": "Отклонён", "arrived": "Гость прибыл"}
 
 
 def _next_pass_number():
@@ -144,6 +144,65 @@ def guest_pass(uuid):
         "status": gp.status,
         "status_label": GUEST_STATUS_LABELS.get(gp.status, gp.status),
     })
+
+
+@portal.route('/p/<uuid>/arrived', methods=['POST'])
+def guest_arrived(uuid):
+    """Гость сообщает, что он у входа. Жителю уходит уведомление."""
+    from datetime import datetime
+    gp = GuestPass.query.get(uuid)
+    if not gp:
+        return jsonify({'error': 'Пропуск не найден'}), 404
+
+    if gp.status == 'rejected':
+        return jsonify({'error': 'Вход по этому пропуску запрещён'}), 403
+
+    if gp.status != 'arrived':
+        gp.status = 'arrived'
+        gp.arrived_at = datetime.now()
+
+        # Уведомляем жителя (один раз, при первом прибытии)
+        resident = db.session.get(people, gp.user_id) if gp.user_id else None
+        if resident:
+            cat = GUEST_CATEGORY_TITLES.get(gp.category, 'гость')
+            notif = Notification(
+                user_id=resident.id,
+                type='guest_arrived',
+                title='Гость у входа',
+                body=f'{gp.guest_name or "Гость"} прибыл ({cat}, пропуск №{gp.number}).',
+                pass_id=gp.id,
+            )
+            db.session.add(notif)
+        db.session.commit()
+
+    return jsonify({'ok': True})
+
+
+@portal.route('/notifications', methods=['GET'])
+@login_required
+def notifications():
+    rows = (Notification.query
+            .filter_by(user_id=current_user.id)
+            .order_by(Notification.created_at.desc())
+            .limit(50).all())
+    items = [{
+        "id": str(n.id),
+        "type": n.type,
+        "title": n.title,
+        "body": n.body,
+        "is_read": n.is_read,
+        "created": n.created_at.strftime('%d.%m %H:%M'),
+    } for n in rows]
+    return render_template('portal/messages.html', notifications=items)
+
+
+@portal.route('/notifications/read', methods=['POST'])
+@login_required
+def notifications_read():
+    db.session.query(Notification).filter_by(
+        user_id=current_user.id, is_read=False).update({'is_read': True})
+    db.session.commit()
+    return jsonify({'ok': True})
 
 
 @portal.route('/passes/permanent')

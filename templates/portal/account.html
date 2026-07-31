@@ -51,6 +51,19 @@
             </div>
         </div>
 
+        <!-- Биометрия -->
+        <h2 class="section-title">Вход по биометрии</h2>
+        <div class="account-list">
+            <div class="account-row account-row--block">
+                <div class="biometric-wrap">
+                    <button type="button" class="btn" id="biometricEnrollBtn">
+                        <i class="fa-solid fa-fingerprint"></i> Включить Face ID / Touch ID
+                    </button>
+                    <div id="biometricList" class="biometric-list"></div>
+                </div>
+            </div>
+        </div>
+
         <!-- Действия -->
         <h2 class="section-title">Действия</h2>
         <div class="sub-grid">
@@ -101,6 +114,7 @@
 {% endblock %}
 
 {% block scripts %}
+<script src="{{ url_for('static', filename='js/webauthn.js') }}"></script>
 <script>
     (function () {
         var overlay = document.getElementById('settingsOverlay');

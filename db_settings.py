@@ -66,6 +66,7 @@ class GuestPass(db.Model):
     guest_name = db.Column(db.String(120), nullable=True)      # имя гостя
     guest_phone = db.Column(db.String(30), nullable=True)      # телефон гостя
     status = db.Column(db.String(20), default='new', nullable=False)
+    arrived_at = db.Column(db.DateTime, nullable=True)         # когда гость сообщил о прибытии
     created_at = db.Column(db.DateTime, default=datetime.now, nullable=False)
 
 
@@ -79,4 +80,17 @@ class WebAuthnCredential(db.Model):
     transports = db.Column(db.String(120), nullable=True)
     label = db.Column(db.String(120), nullable=True)
     sign_count = db.Column(db.Integer, default=0, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.now, nullable=False)
+
+
+#-----------------------------------   NOTIFICATIONS   -----------------------------------
+class Notification(db.Model):
+    __tablename__ = 'notification'
+    id = db.Column(db.UUID, unique=True, primary_key=True, default=db.func.gen_random_uuid())
+    user_id = db.Column(db.UUID, db.ForeignKey('people.id'), nullable=False, index=True)
+    type = db.Column(db.String(30), nullable=False)            # guest_arrived, request, system
+    title = db.Column(db.String(120), nullable=False)
+    body = db.Column(db.Text, nullable=True)
+    pass_id = db.Column(db.UUID, nullable=True)
+    is_read = db.Column(db.Boolean, default=False, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.now, nullable=False)
