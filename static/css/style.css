@@ -543,7 +543,7 @@ hr {
 .page-inner {
   max-width: 960px;
   margin: 0 auto;
-  padding: 0 24px 120px;
+  padding: 0 24px 48px;
 }
 
 .glass-block {
