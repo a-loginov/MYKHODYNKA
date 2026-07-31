@@ -1,10 +1,12 @@
-const CACHE_NAME = 'mykhodynka-v4';
+const CACHE_NAME = 'mykhodynka-v5';
 const STATIC_ASSETS = [
   '/',
   '/static/css/style.css',
   '/static/js/main.js',
   '/static/img/apps-wallpeprer.png',
   '/static/img/apps-wallpeprer-night.png',
+  '/static/img/icon-192.png',
+  '/static/img/icon-512.png',
   '/static/favicon.png',
 ];
 
