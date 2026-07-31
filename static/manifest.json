@@ -1,0 +1,33 @@
+{
+  "name": "MYKHODYNKA — ЖК «Ходынка»",
+  "short_name": "MYKHODYNKA",
+  "description": "Личный кабинет жителя ЖК «Ходынка»: сервисы, заявки, гостевые пропуска, счётчики.",
+  "lang": "ru",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f4f6fb",
+  "theme_color": "#4446E1",
+  "categories": ["lifestyle", "utilities"],
+  "icons": [
+    {
+      "src": "/static/img/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/static/img/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/static/img/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

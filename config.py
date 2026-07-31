@@ -24,3 +24,9 @@ SECRET_KEY = os.environ['SECRET_KEY']
 
 # Мастер-пароль от админ панели #
 MASTER_PASSWORD = os.environ["MASTER_PASSWORD"]
+
+
+# WebAuthn (Face ID / Touch ID) — RP ID должен совпадать с доменом сайта
+RP_ID = os.environ.get("RP_ID", "localhost")
+RP_NAME = os.environ.get("RP_NAME", "MYKHODYNKA")
+RP_ORIGIN = os.environ.get("RP_ORIGIN", "http://localhost:5533")

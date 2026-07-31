@@ -6,6 +6,7 @@ from sqlalchemy import text
 from db_settings import db, bcrypt, login_manager, people
 from blueprints.auth import auth
 from blueprints.portal import portal
+from blueprints.webauthn import webauthn_bp
 
 
 app = Flask(__name__)

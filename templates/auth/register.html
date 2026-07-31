@@ -2,12 +2,16 @@
 
 {% block title %}MYKHODYNKA — Регистрация{% endblock %}
 
+{% block body_class %} class="auth-body"{% endblock %}
+
 {% block content %}
 <div class="page-wrap">
     <div class="card card--wide">
-        <div class="auth-logo" aria-hidden="true">🏠</div>
-        <h1>Регистрация</h1>
-        <p class="subtitle">Создайте аккаунт жителя Ходынки</p>
+        <div class="auth-head">
+            <div class="auth-logo" aria-hidden="true">🏠</div>
+            <h1>Регистрация</h1>
+            <p class="subtitle">Создайте аккаунт жителя Ходынки</p>
+        </div>
 
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% for category, message in messages %}

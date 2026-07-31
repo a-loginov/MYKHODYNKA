@@ -67,3 +67,16 @@ class GuestPass(db.Model):
     guest_phone = db.Column(db.String(30), nullable=True)      # телефон гостя
     status = db.Column(db.String(20), default='new', nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.now, nullable=False)
+
+
+#-----------------------------------   WEBAUTHN / BIOMETRICS   -----------------------------------
+class WebAuthnCredential(db.Model):
+    __tablename__ = 'webauthn_credential'
+    id = db.Column(db.UUID, unique=True, primary_key=True, default=db.func.gen_random_uuid())
+    user_id = db.Column(db.UUID, db.ForeignKey('people.id'), nullable=False, index=True)
+    credential_id = db.Column(db.String(512), nullable=False, unique=True)
+    public_key = db.Column(db.Text, nullable=False)
+    transports = db.Column(db.String(120), nullable=True)
+    label = db.Column(db.String(120), nullable=True)
+    sign_count = db.Column(db.Integer, default=0, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.now, nullable=False)

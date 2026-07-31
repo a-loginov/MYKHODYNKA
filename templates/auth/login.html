@@ -2,12 +2,16 @@
 
 {% block title %}MYKHODYNKA — Вход{% endblock %}
 
+{% block body_class %} class="auth-body"{% endblock %}
+
 {% block content %}
 <div class="page-wrap">
     <div class="card">
-        <div class="auth-logo" aria-hidden="true">🏠</div>
-        <h1>С возвращением</h1>
-        <p class="subtitle">Войдите, чтобы открыть сервисы дома</p>
+        <div class="auth-head">
+            <div class="auth-logo" aria-hidden="true">🏠</div>
+            <h1>С возвращением</h1>
+            <p class="subtitle">Войдите, чтобы открыть сервисы дома</p>
+        </div>
 
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% for category, message in messages %}
