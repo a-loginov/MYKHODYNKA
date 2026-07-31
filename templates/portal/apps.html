@@ -448,7 +448,7 @@
             clock:   { label: 'Часы',     icon: 'fa-regular fa-clock', kind: 'clock' },
             weather: { label: 'Погода',   icon: 'fa-solid fa-cloud-sun', kind: 'weather' },
             lift:    { label: 'Лифт',     icon: 'fa-solid fa-elevator', kind: 'lift' },
-            brand:   { label: 'Аккаунт',  icon: 'fa-solid fa-house', kind: 'brand' }
+            brand:   { label: 'Аккаунт',  icon: 'fa-solid fa-house', kind: 'brand', url: '{{ url_for("portal.account") }}' }
         };
 
         // Расписание (демо — как в референсе)
@@ -588,6 +588,11 @@
                     '<div class="apps2-widget-icon" aria-hidden="true"><i class="fa-solid fa-house"></i></div>' +
                     '<div class="apps2-widget-title">Аккаунт</div>' +
                     '<div class="apps2-widget-subtitle">Ваш профиль</div>';
+                el.style.cursor = 'pointer';
+                el.addEventListener('click', function () {
+                    if (document.body.classList.contains('edit-mode')) return;
+                    if (w.url) window.location.href = w.url;
+                });
             }
             el.appendChild(makeRemoveBtn());
             return el;
