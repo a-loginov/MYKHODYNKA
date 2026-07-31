@@ -44,31 +44,37 @@ def dashboard():
 
 
 @portal.route('/passes')
+@login_required
 def passes():
     return render_template('portal/passes.html')
 
 
 @portal.route('/passes/permanent')
+@login_required
 def passes_permanent():
     return render_template('portal/passes_permanent.html')
 
 
 @portal.route('/passes/temporary')
+@login_required
 def passes_temporary():
     return render_template('portal/passes_temporary.html')
 
 
 @portal.route('/passes/transport')
+@login_required
 def passes_transport():
     return render_template('portal/passes_transport.html')
 
 
 @portal.route('/passes/history')
+@login_required
 def passes_history():
     return render_template('portal/passes_history.html')
 
 
 @portal.route('/requests')
+@login_required
 def requests_page():
     reqs = [_serialize(r) for r in reversed(_requests)]
     return render_template('portal/requests.html',
