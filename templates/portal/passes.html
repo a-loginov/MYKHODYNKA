@@ -348,9 +348,9 @@
                     window.open(link, '_blank', 'noopener');
                 } else {
                     navigator.clipboard.writeText(link).then(function () {
-                        var old = btn.textContent;
-                        btn.textContent = '✓ Скопировано';
-                        setTimeout(function () { btn.textContent = old; }, 1500);
+                        var old = btn.innerHTML;
+                        btn.innerHTML = '<i class="fa-solid fa-check"></i> Скопировано';
+                        setTimeout(function () { btn.innerHTML = old; }, 1500);
                     });
                 }
             });
