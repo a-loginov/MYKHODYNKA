@@ -178,6 +178,42 @@ def guest_arrived(uuid):
     return jsonify({'ok': True})
 
 
+@portal.route('/p/<uuid:pass_id>/status')
+def guest_pass_status(pass_id):
+    """Публичный статус пропуска — страница гостя опрашивает его, чтобы
+    показать ответ жителя (впустил / отклонил) без ручной перезагрузки."""
+    gp = GuestPass.query.get(pass_id)
+    if not gp:
+        return jsonify({'error': 'not found'}), 404
+    return jsonify({
+        'status': gp.status,
+        'status_label': GUEST_STATUS_LABELS.get(gp.status, gp.status),
+    })
+
+
+@portal.route('/passes/<uuid:pass_id>/respond', methods=['POST'])
+@login_required
+def passes_respond(pass_id):
+    """Житель отвечает на прибытие гостя: впустить или отклонить."""
+    gp = GuestPass.query.get(pass_id)
+    if not gp or gp.user_id != current_user.id:
+        flash('Пропуск не найден', 'error')
+        return redirect(url_for('portal.passes'))
+
+    action = request.form.get('action')
+    if action == 'approve':
+        gp.status = 'approved'
+        flash(f'Гость по пропуску №{gp.number} впущен', 'success')
+    elif action == 'reject':
+        gp.status = 'rejected'
+        flash(f'Пропуск №{gp.number} отклонён', 'success')
+    else:
+        flash('Неизвестное действие', 'error')
+        return redirect(url_for('portal.passes'))
+    db.session.commit()
+    return redirect(url_for('portal.passes'))
+
+
 @portal.route('/notifications', methods=['GET'])
 @login_required
 def notifications():
@@ -293,7 +329,57 @@ def account():
         phone = '+7 ' + phone[1:4] + ' ' + phone[4:7] + '-' + phone[7:9] + '-' + phone[9:11]
     return render_template('portal/account.html',
                            full_name=full_name, phone=phone,
-                           apartment=u.apartment)
+                           apartment=u.apartment,
+                           name=u.name, surname=u.surname, lastname=u.lastname or '',
+                           phone_hidden=bool(getattr(u, 'phone_hidden', False)))
+
+
+@portal.route('/account/profile', methods=['POST'])
+@login_required
+def account_profile():
+    u = current_user
+    name = (request.form.get('name') or '').strip()
+    surname = (request.form.get('surname') or '').strip()
+    if not (name and surname):
+        flash('Имя и фамилия не могут быть пустыми', 'error')
+        return redirect(url_for('portal.account'))
+    u.name = name
+    u.surname = surname
+    u.lastname = (request.form.get('lastname') or '').strip() or None
+    u.apartment = (request.form.get('apartment') or '').strip() or None
+    db.session.commit()
+    flash('Профиль обновлён', 'success')
+    return redirect(url_for('portal.account'))
+
+
+@portal.route('/account/password', methods=['POST'])
+@login_required
+def account_password():
+    u = current_user
+    current = request.form.get('current') or ''
+    new = request.form.get('new') or ''
+    new2 = request.form.get('new2') or ''
+    if not u.check_password(current):
+        flash('Текущий пароль неверный', 'error')
+    elif len(new) < 6:
+        flash('Новый пароль должен быть не короче 6 символов', 'error')
+    elif new != new2:
+        flash('Новые пароли не совпадают', 'error')
+    else:
+        u.set_password(new)
+        db.session.commit()
+        flash('Пароль изменён', 'success')
+    return redirect(url_for('portal.account'))
+
+
+@portal.route('/account/privacy', methods=['POST'])
+@login_required
+def account_privacy():
+    u = current_user
+    u.phone_hidden = (request.form.get('phone_hidden') == 'on')
+    db.session.commit()
+    flash('Настройки приватности сохранены', 'success')
+    return redirect(url_for('portal.account'))
 
 
 # ───── Счётчики ─────

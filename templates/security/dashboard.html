@@ -1,0 +1,120 @@
+{% extends "staff_base.html" %}
+{% block title %}Пост охраны{% endblock %}
+{% block brand_icon %}fa-solid fa-shield-halved{% endblock %}
+{% block area %}Охрана{% endblock %}
+
+{% block nav %}
+<a href="{{ url_for('security.logout') }}"><i class="fa-solid fa-right-from-bracket"></i> Выход</a>
+{% endblock %}
+
+{% block content %}
+<div class="seg" role="tablist">
+    <button type="button" class="is-active" data-tab="passes">Пропуска{% if passes %} · {{ passes|length }}{% endif %}</button>
+    <button type="button" data-tab="contractors">Подрядчики{% if contractors %} · {{ contractors|length }}{% endif %}</button>
+    <button type="button" data-tab="report">Проблема</button>
+</div>
+
+<!-- Пропуска -->
+<div class="tabpane is-active" id="tab-passes">
+    <div class="panel">
+        <div class="panel__head"><div class="panel__title">🎫 Активные пропуска</div></div>
+        {% if passes %}
+            {% for p in passes %}
+            <div class="row">
+                <div class="row__main">
+                    <div class="row__title">{{ p.guest_name }} <span class="pill pill--{{ p.status }}">{{ p.status_label }}</span></div>
+                    <div class="row__meta">
+                        <span>№{{ p.number }}</span><span>·</span><span>{{ p.category_label }}</span>
+                        <span>·</span><span>{{ p.transport_label }}</span>
+                        {% if p.guest_phone %}<span>·</span><span>📞 {{ p.guest_phone }}</span>{% endif %}
+                        {% if p.visit_at %}<span>·</span><span>🕘 {{ p.visit_at }}</span>{% endif %}
+                        {% if p.resident %}<span>·</span><span>к жителю: {{ p.resident }}</span>{% endif %}
+                    </div>
+                </div>
+                <div class="row__actions">
+                    <form method="post" action="{{ url_for('security.pass_action', pass_id=p.id, action='admit') }}">
+                        <button type="submit" class="btn btn--ok">Впустить</button>
+                    </form>
+                    <form method="post" action="{{ url_for('security.pass_action', pass_id=p.id, action='close') }}"
+                          onsubmit="return confirm('Закрыть пропуск №{{ p.number }}? Гость больше не пройдёт.');">
+                        <button type="submit" class="btn btn--danger">Закрыть</button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty">Нет активных пропусков.</div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Подрядчики -->
+<div class="tabpane" id="tab-contractors">
+    <div class="panel">
+        <div class="panel__head"><div class="panel__title">🧰 Регистрация подрядчика</div></div>
+        <form method="post" action="{{ url_for('security.contractor_add') }}">
+            <div class="field"><label for="c-name">Имя *</label><input type="text" id="c-name" name="name" required></div>
+            <div class="field"><label for="c-company">Компания</label><input type="text" id="c-company" name="company"></div>
+            <div class="field"><label for="c-phone">Телефон</label><input type="tel" id="c-phone" name="phone" placeholder="+7 (___) ___-__-__"></div>
+            <div class="field"><label for="c-purpose">Цель / куда</label><input type="text" id="c-purpose" name="purpose" placeholder="Например: ремонт лифта, подъезд 3"></div>
+            <button type="submit" class="btn btn--primary">Зарегистрировать</button>
+        </form>
+    </div>
+
+    <div class="panel">
+        <div class="panel__head"><div class="panel__title">На территории</div></div>
+        {% if contractors %}
+            {% for c in contractors %}
+            <div class="row">
+                <div class="row__main">
+                    <div class="row__title">{{ c.name }}{% if c.company %} · {{ c.company }}{% endif %}</div>
+                    <div class="row__meta">
+                        {% if c.phone %}<span>📞 {{ c.phone }}</span><span>·</span>{% endif %}
+                        {% if c.purpose %}<span>{{ c.purpose }}</span><span>·</span>{% endif %}
+                        <span>с {{ c.created }}</span>
+                    </div>
+                </div>
+                <div class="row__actions">
+                    <form method="post" action="{{ url_for('security.contractor_close', c_id=c.id) }}">
+                        <button type="submit" class="btn btn--ghost">Ушёл</button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty">Подрядчиков на территории нет.</div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Проблема -->
+<div class="tabpane" id="tab-report">
+    <div class="panel">
+        <div class="panel__head"><div class="panel__title">📣 Сообщить о проблеме администратору</div></div>
+        <form method="post" action="{{ url_for('security.report_problem') }}">
+            <div class="field">
+                <label for="r-msg">Что случилось?</label>
+                <textarea id="r-msg" name="message" placeholder="Опишите проблему — сломался домофон, сбой в системе, нужен админ и т.п." required></textarea>
+            </div>
+            <button type="submit" class="btn btn--primary">Отправить админу</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    (function () {
+        var tabs = document.querySelectorAll('.seg button');
+        var panes = document.querySelectorAll('.tabpane');
+        tabs.forEach(function (t) {
+            t.addEventListener('click', function () {
+                tabs.forEach(function (x) { x.classList.remove('is-active'); });
+                panes.forEach(function (p) { p.classList.remove('is-active'); });
+                t.classList.add('is-active');
+                document.getElementById('tab-' + t.getAttribute('data-tab')).classList.add('is-active');
+            });
+        });
+    })();
+</script>
+{% endblock %}

@@ -26,6 +26,7 @@ class people(db.Model, UserMixin):
     total_score = db.Column(db.Integer, default=0, nullable=False)
     password_hash = db.Column(db.String(128), nullable=True)
     apartment = db.Column(db.String(10), nullable=True)
+    phone_hidden = db.Column(db.Boolean, default=False, nullable=False)  # «Заблокировать номер»
 
     def set_password(self, password):
         self.password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
@@ -94,3 +95,28 @@ class Notification(db.Model):
     pass_id = db.Column(db.UUID, nullable=True)
     is_read = db.Column(db.Boolean, default=False, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.now, nullable=False)
+
+
+#-----------------------------------   PROBLEM REPORTS (охрана → админ)   -----------------------------------
+class ProblemReport(db.Model):
+    __tablename__ = 'problem_report'
+    id = db.Column(db.UUID, unique=True, primary_key=True, default=db.func.gen_random_uuid())
+    source = db.Column(db.String(20), default='security', nullable=False)   # security, system
+    author = db.Column(db.String(60), nullable=True)                        # кто сообщил (напр. «Охрана»)
+    message = db.Column(db.Text, nullable=False)
+    status = db.Column(db.String(20), default='new', nullable=False)        # new, resolved
+    created_at = db.Column(db.DateTime, default=datetime.now, nullable=False)
+    resolved_at = db.Column(db.DateTime, nullable=True)
+
+
+#-----------------------------------   CONTRACTORS (подрядчики у охраны)   -----------------------------------
+class Contractor(db.Model):
+    __tablename__ = 'contractor'
+    id = db.Column(db.UUID, unique=True, primary_key=True, default=db.func.gen_random_uuid())
+    name = db.Column(db.String(120), nullable=False)
+    company = db.Column(db.String(120), nullable=True)
+    phone = db.Column(db.String(30), nullable=True)
+    purpose = db.Column(db.String(200), nullable=True)                      # цель визита / куда
+    status = db.Column(db.String(20), default='active', nullable=False)     # active, closed
+    created_at = db.Column(db.DateTime, default=datetime.now, nullable=False)
+    closed_at = db.Column(db.DateTime, nullable=True)

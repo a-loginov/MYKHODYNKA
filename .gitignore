@@ -1,5 +1,7 @@
 .env
 .venv
+venv/
 .рус
 __pycache__
+*.pyc
 certbot/

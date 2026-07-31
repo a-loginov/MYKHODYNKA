@@ -105,6 +105,20 @@
     .empty-state2 { text-align: center; color: #9a9eb8; padding: 40px 20px; font-size: 14px; }
     .status-pill { padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; }
     .status-pill--new { color: #4446E1; background: rgba(68,70,225,0.12); }
+    .status-pill--arrived { color: #e8a400; background: #fff5db; }
+    .status-pill--approved, .status-pill--done { color: #1c9d58; background: #e6f9ee; }
+    .status-pill--rejected { color: #dc3545; background: #ffecec; }
+
+    .arrived-banner {
+        margin-top: 12px; padding: 12px 14px; border-radius: 14px; background: #fff8e6;
+        display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+        font-size: 13px; font-weight: 700; color: #7a5a00;
+    }
+    .arrived-actions { display: flex; gap: 8px; }
+    .mini-btn { border: none; cursor: pointer; font-family: inherit; font-weight: 700; font-size: 13px; padding: 8px 14px; border-radius: 11px; }
+    .mini-btn--ok { background: #1c9d58; color: #fff; }
+    .mini-btn--no { background: #ffecec; color: #dc3545; }
+    .mini-btn:active { transform: scale(0.96); }
 
     @media (max-width: 600px) {
         .passes-page { padding: 14px; }
@@ -216,6 +230,23 @@
                     <span>{{ p.category_label }}</span>
                     {% if p.visit_at %}<span>·</span><span>{{ p.visit_at }}</span>{% endif %}
                 </div>
+
+                {% if p.status == 'arrived' %}
+                <div class="arrived-banner">
+                    <span>🔔 Гость у входа — впустить?</span>
+                    <div class="arrived-actions">
+                        <form method="post" action="{{ url_for('portal.passes_respond', pass_id=p.id) }}">
+                            <input type="hidden" name="action" value="approve">
+                            <button type="submit" class="mini-btn mini-btn--ok">Впустить</button>
+                        </form>
+                        <form method="post" action="{{ url_for('portal.passes_respond', pass_id=p.id) }}">
+                            <input type="hidden" name="action" value="reject">
+                            <button type="submit" class="mini-btn mini-btn--no">Отклонить</button>
+                        </form>
+                    </div>
+                </div>
+                {% endif %}
+
                 <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(20,24,60,0.08); display: flex; gap: 8px;">
                     <button type="button" class="pass-link-btn" data-pass-id="{{ p.id }}">🔗 Ссылка для гостя</button>
                     <button type="button" class="pass-link-btn" data-pass-id="{{ p.id }}" data-open>Открыть</button>

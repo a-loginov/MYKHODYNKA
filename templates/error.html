@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>MYKHODYNKA — {{ code }}</title>
+    <meta name="theme-color" content="#4446E1">
+    <link rel="icon" href="/static/img/icon-192.png" sizes="192x192">
+    <link rel="apple-touch-icon" href="/static/img/apple-touch-icon.png">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+        body {
+            background: url('/static/img/apps-wallpaper.svg') top center no-repeat, #f4f6fb;
+            background-size: cover; background-position: top center;
+            min-height: 100vh; color: #1b1f3b;
+            display: flex; align-items: center; justify-content: center; padding: 20px;
+        }
+        .err-card {
+            width: 100%; max-width: 420px; background: #fff; border-radius: 24px;
+            padding: 40px 28px; text-align: center; box-shadow: 0 16px 50px rgba(20, 24, 60, 0.18);
+        }
+        .err-emoji { font-size: 60px; line-height: 1; margin-bottom: 14px; }
+        .err-code { font-size: 15px; font-weight: 800; letter-spacing: 0.14em; color: #9a9eb8; margin-bottom: 8px; }
+        .err-title { font-size: 24px; font-weight: 800; color: #1b1f3b; margin-bottom: 10px; }
+        .err-text { font-size: 15px; line-height: 1.5; color: #6a6f8a; margin-bottom: 26px; }
+        .err-actions { display: flex; flex-direction: column; gap: 10px; }
+        .err-btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            padding: 14px 18px; border-radius: 14px; border: none; cursor: pointer;
+            font-family: inherit; font-size: 15px; font-weight: 700; text-decoration: none;
+            transition: transform 150ms ease, opacity 180ms ease;
+        }
+        .err-btn:active { transform: scale(0.97); }
+        .err-btn--primary { background: linear-gradient(135deg, #4446E1, #2E3192); color: #fff; box-shadow: 0 8px 22px rgba(68, 70, 225, 0.3); }
+        .err-btn--ghost { background: #eef0ff; color: #4446E1; }
+        .err-brand { margin-top: 22px; font-size: 12px; color: #b3b7cc; letter-spacing: 0.04em; }
+    </style>
+</head>
+<body>
+    <div class="err-card">
+        <div class="err-emoji" aria-hidden="true">{{ emoji }}</div>
+        <div class="err-code">ОШИБКА {{ code }}</div>
+        <h1 class="err-title">{{ title }}</h1>
+        <p class="err-text">{{ message }}</p>
+        <div class="err-actions">
+            <a href="/" class="err-btn err-btn--primary">🏠 На главную</a>
+            <button type="button" class="err-btn err-btn--ghost" onclick="location.reload()">↻ Обновить страницу</button>
+        </div>
+        <div class="err-brand">ЖК «Ходынка»</div>
+    </div>
+</body>
+</html>

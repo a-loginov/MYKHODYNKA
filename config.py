@@ -26,6 +26,10 @@ SECRET_KEY = os.environ['SECRET_KEY']
 MASTER_PASSWORD = os.environ["MASTER_PASSWORD"]
 
 
+# Пароль для страницы охраны (если не задан — используется мастер-пароль) #
+SECURITY_PASSWORD = os.environ.get("SECURITY_PASSWORD", MASTER_PASSWORD)
+
+
 # WebAuthn (Face ID / Touch ID) — RP ID должен совпадать с доменом сайта
 RP_ID = os.environ.get("RP_ID", "localhost")
 RP_NAME = os.environ.get("RP_NAME", "MYKHODYNKA")

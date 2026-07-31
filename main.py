@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 from config import load_dotenv
 import os
 
@@ -7,6 +7,8 @@ from db_settings import db, bcrypt, login_manager, people
 from blueprints.auth import auth
 from blueprints.portal import portal
 from blueprints.webauthn import webauthn_bp
+from blueprints.admin import admin
+from blueprints.security import security
 
 
 app = Flask(__name__)
@@ -33,6 +35,30 @@ def load_user(user_id):
 app.register_blueprint(auth)
 app.register_blueprint(portal)
 app.register_blueprint(webauthn_bp)
+app.register_blueprint(admin)
+app.register_blueprint(security)
+
+
+# ───── Единая страница ошибок ─────
+ERROR_PAGES = {
+    400: ("🤔", "Некорректный запрос", "Похоже, в запросе что-то не так. Попробуйте ещё раз."),
+    403: ("🔒", "Доступ запрещён", "У вас нет прав для просмотра этой страницы."),
+    404: ("🧭", "Страница не найдена", "Возможно, ссылка устарела или введена с ошибкой."),
+    500: ("🛠️", "Что-то пошло не так", "Мы уже знаем о проблеме и уже её чиним. Попробуйте позже."),
+    502: ("🛠️", "Сервис недоступен", "Идут технические работы. Обновите страницу через минуту."),
+    503: ("🛠️", "Сервис временно недоступен", "Идут технические работы. Обновите страницу через минуту."),
+}
+
+
+def _render_error(code):
+    emoji, title, message = ERROR_PAGES.get(
+        code, ("⚠️", "Ошибка", "Произошла непредвиденная ошибка."))
+    return render_template('error.html', code=code, emoji=emoji,
+                           title=title, message=message), code
+
+
+for _code in ERROR_PAGES:
+    app.register_error_handler(_code, lambda e, c=_code: _render_error(c))
 
 
 def _sync_schema():
@@ -56,6 +82,9 @@ def _sync_schema():
             ))
             db.session.execute(text(
                 "ALTER TABLE guest_pass ADD COLUMN IF NOT EXISTS arrived_at TIMESTAMP"
+            ))
+            db.session.execute(text(
+                "ALTER TABLE people ADD COLUMN IF NOT EXISTS phone_hidden BOOLEAN DEFAULT FALSE NOT NULL"
             ))
             db.session.commit()
         except Exception as exc:  # noqa: BLE001
