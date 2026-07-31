@@ -185,11 +185,11 @@ def guest_arrived(uuid):
     return jsonify({'ok': True})
 
 
-@portal.route('/p/<uuid:pass_id>/status')
-def guest_pass_status(pass_id):
+@portal.route('/p/<uuid>/status')
+def guest_pass_status(uuid):
     """Публичный статус пропуска — страница гостя опрашивает его, чтобы
     показать ответ жителя (впустил / отклонил) без ручной перезагрузки."""
-    gp = GuestPass.query.get(pass_id)
+    gp = GuestPass.query.get(uuid)
     if not gp:
         return jsonify({'error': 'not found'}), 404
     return jsonify({
