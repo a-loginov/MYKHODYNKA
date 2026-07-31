@@ -1,0 +1,29 @@
+{% extends "portal/base_portal.html" %}
+
+{% block title %}MYKHODYNKA — Пропуска{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Пропуска</h1>
+    <p class="page-subtitle">Управление доступом на территорию</p>
+</div>
+
+<div class="sub-grid">
+    <a href="{{ url_for('portal.passes_permanent') }}" class="sub-card">
+        <h3>Постоянные</h3>
+        <p>Родственники, няни, репетиторы</p>
+    </a>
+    <a href="{{ url_for('portal.passes_temporary') }}" class="sub-card">
+        <h3>Одноразовые</h3>
+        <p>Гости, курьеры, доставка</p>
+    </a>
+    <a href="{{ url_for('portal.passes_transport') }}" class="sub-card">
+        <h3>Транспорт</h3>
+        <p>Автомобили, грузовой, такси</p>
+    </a>
+    <a href="{{ url_for('portal.passes_history') }}" class="sub-card">
+        <h3>История</h3>
+        <p>Кто и когда проходил</p>
+    </a>
+</div>
+{% endblock %}

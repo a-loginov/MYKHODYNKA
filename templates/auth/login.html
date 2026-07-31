@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}MYKHODYNKA — Вход{% endblock %}
+
+{% block content %}
+<div class="page-wrap">
+    <div class="card">
+        <h1>Вход в систему</h1>
+        <p class="subtitle">Авторизуйтесь, чтобы продолжить</p>
+
+        <form method="POST" action="/login">
+            <div class="form-group">
+                <label for="phone">Номер телефона</label>
+                <input type="tel" id="phone" name="phone" placeholder="+7 (999) 123-45-67" autocomplete="tel">
+                <span class="hint">Номер из договора</span>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Пароль</label>
+                <input type="password" id="password" name="password" placeholder="········" autocomplete="current-password">
+            </div>
+
+            <button type="submit" class="btn">Войти</button>
+        </form>
+
+        <hr>
+
+        <p class="register-link">
+            Нет аккаунта?
+            <a href="/register">Зарегистрироваться</a>
+        </p>
+
+        <button class="info-trigger" id="infoTrigger" type="button">
+            Как получить доступ родственникам?
+        </button>
+    </div>
+</div>
+
+<div class="overlay" id="overlay"></div>
+
+<div class="bottom-sheet" id="bottomSheet">
+    <div class="bottom-sheet__handle"></div>
+    <div class="bottom-sheet__header">
+        <h2>Как получить доступ родственникам?</h2>
+    </div>
+    <div class="bottom-sheet__body">
+        <div class="info-item">
+            <h3>Для родителей</h3>
+            <p>Напишите заявление на имя директора через вашего куратора. После проверки данных вам будет выдан логин и пароль.</p>
+        </div>
+
+        <div class="info-item">
+            <h3>Для бабушек и дедушек</h3>
+            <p>Добавление родственников возможно только через личный кабинет основного подписчика. Обратитесь к своему куратору для оформления.</p>
+        </div>
+
+        <div class="info-item">
+            <h3>Восстановление доступа</h3>
+            <p>Если вы забыли пароль — обратитесь к администратору или напишите в поддержку. Смена пароля через куратора занимает до 24 часов.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends "portal/base_portal.html" %}
+
+{% block title %}MYKHODYNKA{% endblock %}
+
+{% block content %}
+<div class="apps-header">
+    <h1>Сервисы</h1>
+    <p class="apps-subtitle">Портал жителя Ходынки</p>
+</div>
+
+<div class="apps-grid">
+    <a href="{{ url_for('portal.passes') }}" class="app-card">
+        <div class="app-card__icon">🚪</div>
+        <div class="app-card__title">Пропуска</div>
+        <div class="app-card__desc">Гости, транспорт, доступ</div>
+    </a>
+
+    <a href="{{ url_for('portal.requests_page') }}" class="app-card">
+        <div class="app-card__icon">🔧</div>
+        <div class="app-card__title">Заявки в ЖК</div>
+        <div class="app-card__desc">Поломки, ремонт, уборка</div>
+    </a>
+
+    <a href="{{ url_for('portal.appeals') }}" class="app-card">
+        <div class="app-card__icon">📋</div>
+        <div class="app-card__title">Обращения</div>
+        <div class="app-card__desc">Связь с управляющей</div>
+    </a>
+
+    <a href="{{ url_for('portal.messages') }}" class="app-card">
+        <div class="app-card__icon">💬</div>
+        <div class="app-card__title">Сообщения</div>
+        <div class="app-card__desc">Чаты, новости, чат-жителей</div>
+    </a>
+
+    <a href="{{ url_for('portal.passes') }}" class="app-card">
+        <div class="app-card__icon">🗓️</div>
+        <div class="app-card__title">Мероприятия</div>
+        <div class="app-card__desc">Собрания, встречи, события</div>
+    </a>
+
+    <a href="{{ url_for('portal.messages') }}" class="app-card">
+        <div class="app-card__icon">📢</div>
+        <div class="app-card__title">Объявления</div>
+        <div class="app-card__desc">Новости дома и УК</div>
+    </a>
+</div>
+{% endblock %}

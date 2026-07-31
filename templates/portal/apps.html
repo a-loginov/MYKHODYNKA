@@ -1,0 +1,263 @@
+{% extends "portal/base_portal.html" %}
+
+{% block title %}MYKHODYNKA — Сервисы{% endblock %}
+
+{% block body_class %}apps-page{% endblock %}
+
+{% block content %}
+<section class="cover">
+    <div class="cover__inner">
+        <p class="cover__hello">Здравствуйте,</p>
+        <h1 class="cover__name">{{ name or 'Житель Ходынки' }}</h1>
+    </div>
+</section>
+
+<div class="apps-inner">
+    <div class="services-block">
+        <div class="apps-panel__head">
+            <h2>Сервисы</h2>
+            <button type="button" class="icon-btn" id="editToggle" aria-pressed="false">
+                <span id="editLabel">Настроить</span>
+            </button>
+        </div>
+
+        <div class="services-grid" id="servicesGrid"><!-- рендерится из JS --></div>
+
+        <button type="button" class="add-service-btn" id="addServiceBtn">
+            + Добавить сервис или виджет
+        </button>
+    </div>
+</div>
+
+<!-- Bottom sheet: каталог сервисов и виджетов -->
+<div class="overlay" id="addOverlay"></div>
+<div class="bottom-sheet" id="addPanel" role="dialog" aria-modal="true" aria-labelledby="addTitle" aria-hidden="true">
+    <div class="bottom-sheet__handle"></div>
+    <div class="bottom-sheet__header"><h2 id="addTitle">Добавить на главную</h2></div>
+    <div class="bottom-sheet__body">
+        <div class="catalog-grid" id="catalogGrid"><!-- рендерится из JS --></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+<script>
+    (function () {
+        // Каталог сервисов ЖК (url берётся из Flask-маршрутов)
+        var SERVICES = {
+            passes:        { title: 'Пропуска',      icon: '🚪', url: '{{ url_for("portal.passes") }}' },
+            requests:      { title: 'Заявки в ЖК',   icon: '🔧', url: '{{ url_for("portal.requests_page") }}' },
+            appeals:       { title: 'Обращения',     icon: '📋', url: '{{ url_for("portal.appeals") }}' },
+            messages:      { title: 'Сообщения',     icon: '💬', url: '{{ url_for("portal.messages") }}' },
+            events:        { title: 'Мероприятия',   icon: '🗓️', url: '{{ url_for("portal.passes") }}' },
+            announcements: { title: 'Объявления',    icon: '📢', url: '{{ url_for("portal.messages") }}' }
+        };
+
+        var WIDGETS = {
+            clock:   { label: 'Часы',   icon: '🕐' },
+            weather: { label: 'Погода', icon: '⛅️' }
+        };
+
+        var STORAGE_KEY = 'khodynka_apps_layout';
+        var DEFAULT_LAYOUT = [
+            { type: 'service', id: 'passes' },
+            { type: 'service', id: 'requests' },
+            { type: 'service', id: 'appeals' },
+            { type: 'service', id: 'messages' },
+            { type: 'service', id: 'events' },
+            { type: 'service', id: 'announcements' }
+        ];
+
+        var grid = document.getElementById('servicesGrid');
+        var editToggle = document.getElementById('editToggle');
+        var editLabel = document.getElementById('editLabel');
+        var addBtn = document.getElementById('addServiceBtn');
+        var addPanel = document.getElementById('addPanel');
+        var addOverlay = document.getElementById('addOverlay');
+        var catalogGrid = document.getElementById('catalogGrid');
+        var sortable = null;
+        var clockTimer = null;
+
+        function loadLayout() {
+            try {
+                var saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+                if (Array.isArray(saved) && saved.length) return saved;
+            } catch (e) { /* повреждённые данные — используем дефолт */ }
+            return DEFAULT_LAYOUT.slice();
+        }
+
+        function saveLayout(layout) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(layout));
+        }
+
+        function readLayoutFromDOM() {
+            return Array.from(grid.children).map(function (el) {
+                return { type: el.dataset.type, id: el.dataset.id };
+            });
+        }
+
+        function makeRemoveBtn() {
+            var btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'remove-btn';
+            btn.setAttribute('aria-label', 'Убрать');
+            btn.textContent = '×';
+            btn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                var tile = btn.closest('[data-id]');
+                tile.remove();
+                saveLayout(readLayoutFromDOM());
+                renderCatalog();
+            });
+            return btn;
+        }
+
+        function buildService(id) {
+            var s = SERVICES[id];
+            if (!s) return null;
+            var el = document.createElement('div');
+            el.className = 'service-item';
+            el.dataset.type = 'service';
+            el.dataset.id = id;
+            el.innerHTML =
+                '<span class="service-item__icon" aria-hidden="true">' + s.icon + '</span>' +
+                '<span class="service-item__title">' + s.title + '</span>';
+            el.appendChild(makeRemoveBtn());
+            el.addEventListener('click', function () {
+                if (!document.body.classList.contains('edit-mode')) {
+                    window.location.href = s.url;
+                }
+            });
+            return el;
+        }
+
+        function buildWidget(id) {
+            var el = document.createElement('div');
+            el.className = 'widget ' + id;
+            el.dataset.type = 'widget';
+            el.dataset.id = id;
+
+            if (id === 'clock') {
+                el.innerHTML = '<div class="clock-time">--:--</div><div class="clock-date"></div>';
+            } else if (id === 'weather') {
+                el.innerHTML =
+                    '<div class="weather-info">' +
+                        '<span class="weather-temp">+18°</span>' +
+                        '<span class="weather-desc">Москва · облачно</span>' +
+                    '</div>' +
+                    '<span class="weather-icon" aria-hidden="true">⛅️</span>';
+            }
+            el.appendChild(makeRemoveBtn());
+            return el;
+        }
+
+        function render() {
+            grid.innerHTML = '';
+            loadLayout().forEach(function (item) {
+                var el = item.type === 'widget' ? buildWidget(item.id) : buildService(item.id);
+                if (el) grid.appendChild(el);
+            });
+            startClock();
+        }
+
+        function startClock() {
+            if (clockTimer) { clearInterval(clockTimer); clockTimer = null; }
+            var faces = grid.querySelectorAll('.widget.clock');
+            if (!faces.length) return;
+
+            function tick() {
+                var now = new Date();
+                var time = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+                var date = now.toLocaleDateString('ru-RU', { weekday: 'long', day: 'numeric', month: 'long' });
+                grid.querySelectorAll('.widget.clock').forEach(function (w) {
+                    w.querySelector('.clock-time').textContent = time;
+                    w.querySelector('.clock-date').textContent = date;
+                });
+            }
+            tick();
+            clockTimer = setInterval(tick, 1000);
+        }
+
+        function present(id) {
+            return Array.from(grid.children).some(function (el) { return el.dataset.id === id; });
+        }
+
+        function renderCatalog() {
+            catalogGrid.innerHTML = '';
+            Object.keys(SERVICES).forEach(function (id) {
+                catalogGrid.appendChild(catalogTile('service', id, SERVICES[id].icon, SERVICES[id].title));
+            });
+            Object.keys(WIDGETS).forEach(function (id) {
+                catalogGrid.appendChild(catalogTile('widget', id, WIDGETS[id].icon, WIDGETS[id].label));
+            });
+        }
+
+        function catalogTile(type, id, icon, label) {
+            var btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'catalog-item';
+            // сервисы уникальны; виджеты можно добавлять повторно
+            if (type === 'service' && present(id)) btn.disabled = true;
+            btn.innerHTML =
+                '<span class="catalog-item__icon" aria-hidden="true">' + icon + '</span>' +
+                '<span class="catalog-item__label">' + label + '</span>';
+            btn.addEventListener('click', function () {
+                var el = type === 'widget' ? buildWidget(id) : buildService(id);
+                if (el) {
+                    grid.appendChild(el);
+                    saveLayout(readLayoutFromDOM());
+                    startClock();
+                }
+                closeAddPanel();
+            });
+            return btn;
+        }
+
+        function initSortable() {
+            if (sortable) { sortable.destroy(); sortable = null; }
+            if (!document.body.classList.contains('edit-mode')) return;
+            sortable = new Sortable(grid, {
+                animation: 150,
+                forceFallback: true,
+                ghostClass: 'sortable-ghost',
+                chosenClass: 'sortable-chosen',
+                dragClass: 'sortable-drag',
+                onEnd: function () { saveLayout(readLayoutFromDOM()); }
+            });
+        }
+
+        function toggleEdit() {
+            var on = document.body.classList.toggle('edit-mode');
+            editToggle.classList.toggle('is-active', on);
+            editToggle.setAttribute('aria-pressed', String(on));
+            editLabel.textContent = on ? 'Готово' : 'Настроить';
+            initSortable();
+        }
+
+        function openAddPanel() {
+            renderCatalog();
+            addPanel.classList.add('open');
+            addOverlay.classList.add('open');
+            addPanel.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeAddPanel() {
+            addPanel.classList.remove('open');
+            addOverlay.classList.remove('open');
+            addPanel.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+        }
+
+        editToggle.addEventListener('click', toggleEdit);
+        addBtn.addEventListener('click', openAddPanel);
+        addOverlay.addEventListener('click', closeAddPanel);
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') closeAddPanel();
+        });
+
+        render();
+    })();
+</script>
+{% endblock %}

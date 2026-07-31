@@ -1,0 +1,176 @@
+{% extends "portal/base_portal.html" %}
+
+{% block title %}MYKHODYNKA — Заявки{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Заявки в ЖК</h1>
+    <p class="page-subtitle">Сообщите о проблеме — управляющая компания решит</p>
+</div>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+    <div class="flash flash--{{ category }}" role="status">
+        <span aria-hidden="true">{{ '✓' if category == 'success' else '!' }}</span>
+        <span>{{ message }}</span>
+    </div>
+    {% endfor %}
+{% endwith %}
+
+<div class="chip-row" role="group" aria-label="Фильтр по категории">
+    <button type="button" class="chip is-active" data-filter="all">Все</button>
+    {% for c in categories %}
+    <button type="button" class="chip" data-filter="{{ c.id }}">{{ c.title }}</button>
+    {% endfor %}
+</div>
+
+<h2 class="section-title">Создать заявку</h2>
+<div class="sub-grid">
+    {% for c in categories %}
+    <button type="button"
+            class="sub-card request-card"
+            data-category="{{ c.id }}"
+            data-title="{{ c.title }}"
+            data-filter-key="{{ c.id }}"
+            aria-haspopup="dialog">
+        <span class="request-card__icon" aria-hidden="true">{{ c.icon }}</span>
+        <span class="request-card__body">
+            <h3>{{ c.title }}</h3>
+            <p>{{ c.desc }}</p>
+        </span>
+        <span class="request-card__chevron" aria-hidden="true">→</span>
+    </button>
+    {% endfor %}
+</div>
+
+<h2 class="section-title">Мои заявки</h2>
+{% if requests %}
+<div class="request-list">
+    {% for r in requests %}
+    <div class="request-item" data-filter-key="{{ r.category }}">
+        <div class="request-item__head">
+            <span class="request-item__title">{{ r.title }}</span>
+            <span class="status-badge status-badge--{{ r.status }}">{{ r.status_label }}</span>
+        </div>
+        <p class="request-item__desc">{{ r.description }}</p>
+        <div class="request-item__meta">
+            <span>№{{ r.number }}</span>
+            <span>·</span>
+            <span>{{ r.created }}</span>
+            {% if r.apartment %}<span>·</span><span>кв. {{ r.apartment }}</span>{% endif %}
+            {% if r.urgency == 'high' %}<span>·</span><span>срочно</span>{% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state glass">
+    <p>Пока нет заявок. Выберите категорию выше, чтобы создать первую.</p>
+</div>
+{% endif %}
+
+<!-- Bottom sheet: форма новой заявки -->
+<div class="overlay" id="overlay"></div>
+<div class="bottom-sheet" id="requestSheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" aria-hidden="true">
+    <div class="bottom-sheet__handle"></div>
+    <div class="bottom-sheet__header">
+        <h2 id="sheetTitle">Новая заявка</h2>
+    </div>
+    <form class="bottom-sheet__body request-form" method="post" action="{{ url_for('portal.requests_create') }}">
+        <input type="hidden" name="category" id="fieldCategory" value="other">
+
+        <div class="form-group">
+            <label>Категория</label>
+            <div class="pill"><span aria-hidden="true" id="pillIcon">💬</span><span id="pillTitle">Другое</span></div>
+        </div>
+
+        <div class="form-group">
+            <label for="fieldDesc">Что случилось?</label>
+            <textarea id="fieldDesc" name="description" rows="3" required
+                      placeholder="Опишите проблему как можно подробнее"></textarea>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="fieldApt">Квартира</label>
+                <input id="fieldApt" name="apartment" inputmode="numeric" placeholder="58">
+            </div>
+            <div class="form-group">
+                <label for="fieldEntrance">Подъезд</label>
+                <input id="fieldEntrance" name="entrance" inputmode="numeric" placeholder="3">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Срочность</label>
+            <div class="segmented" role="radiogroup" aria-label="Срочность">
+                <label><input type="radio" name="urgency" value="low">Не срочно</label>
+                <label><input type="radio" name="urgency" value="normal" checked>Обычная</label>
+                <label><input type="radio" name="urgency" value="high">Срочно</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="fieldPhone">Телефон для связи</label>
+            <input id="fieldPhone" name="phone" type="tel" placeholder="+7 (___) ___-__-__">
+        </div>
+
+        <button type="submit" class="btn">Отправить заявку</button>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    (function () {
+        var overlay = document.getElementById('overlay');
+        var sheet = document.getElementById('requestSheet');
+        var fieldCategory = document.getElementById('fieldCategory');
+        var pillIcon = document.getElementById('pillIcon');
+        var pillTitle = document.getElementById('pillTitle');
+        var descField = document.getElementById('fieldDesc');
+
+        function openSheet(card) {
+            fieldCategory.value = card.getAttribute('data-category');
+            pillTitle.textContent = card.getAttribute('data-title');
+            pillIcon.textContent = card.querySelector('.request-card__icon').textContent;
+            sheet.classList.add('open');
+            overlay.classList.add('open');
+            sheet.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+            setTimeout(function () { descField.focus(); }, 350);
+        }
+
+        function closeSheet() {
+            sheet.classList.remove('open');
+            overlay.classList.remove('open');
+            sheet.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+        }
+
+        document.querySelectorAll('.request-card').forEach(function (card) {
+            card.addEventListener('click', function () { openSheet(card); });
+        });
+
+        overlay.addEventListener('click', closeSheet);
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') closeSheet();
+        });
+
+        // Фильтр по категории (чипы)
+        var chips = document.querySelectorAll('.chip');
+        var filterables = document.querySelectorAll('[data-filter-key]');
+
+        chips.forEach(function (chip) {
+            chip.addEventListener('click', function () {
+                chips.forEach(function (c) { c.classList.remove('is-active'); });
+                chip.classList.add('is-active');
+                var filter = chip.getAttribute('data-filter');
+                filterables.forEach(function (el) {
+                    el.hidden = !(filter === 'all' || el.getAttribute('data-filter-key') === filter);
+                });
+            });
+        });
+    })();
+</script>
+{% endblock %}
