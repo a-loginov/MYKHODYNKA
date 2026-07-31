@@ -7,11 +7,6 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body class="portal-body {% block body_class %}{% endblock %}">
-    <header class="topbar">
-        <span class="topbar__logo">MYKHODYNKA</span>
-        <a href="{{ url_for('auth.login') }}" class="topbar__exit">Выйти</a>
-    </header>
-
     <main class="portal-content">
         {% block content %}{% endblock %}
     </main>

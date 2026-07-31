@@ -33,4 +33,4 @@ app.register_blueprint(portal)
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5533)
+    app.run(debug=True, port=5533, host="0.0.0.0")

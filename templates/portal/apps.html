@@ -7,8 +7,7 @@
 {% block content %}
 <section class="cover">
     <div class="cover__inner">
-        <p class="cover__hello">Здравствуйте,</p>
-        <h1 class="cover__name">{{ name or 'Житель Ходынки' }}</h1>
+        <h1 class="cover__name">Здравствуйте,<br>{{ name or 'Житель Ходынки' }}</h1>
     </div>
 </section>
 
@@ -27,6 +26,11 @@
             + Добавить сервис или виджет
         </button>
     </div>
+</div>
+
+<!-- Попап вызова лифта -->
+<div class="lift-popup" id="liftPopup" role="status">
+    <div class="lift-popup-content">🚀 Лифт вызван!</div>
 </div>
 
 <!-- Bottom sheet: каталог сервисов и виджетов -->
@@ -55,8 +59,45 @@
         };
 
         var WIDGETS = {
-            clock:   { label: 'Часы',   icon: '🕐' },
-            weather: { label: 'Погода', icon: '⛅️' }
+            clock:    { label: 'Часы',        icon: '🕐' },
+            weather:  { label: 'Погода',      icon: '⛅️' },
+            schedule: { label: 'Расписание',  icon: '🔔' },
+            lift:     { label: 'Лифт',        icon: '🛗' }
+        };
+
+        // Расписание (демо — как в референсе)
+        var SCHEDULE = [
+            { start: '08:30', end: '09:15', type: 'lesson', name: '1 урок' },
+            { start: '09:15', end: '09:25', type: 'break',  name: 'перемена' },
+            { start: '09:25', end: '10:10', type: 'lesson', name: '2 урок' },
+            { start: '10:10', end: '10:25', type: 'break',  name: 'перемена' },
+            { start: '10:25', end: '11:10', type: 'lesson', name: '3 урок' },
+            { start: '11:10', end: '11:25', type: 'break',  name: 'перемена' },
+            { start: '11:25', end: '12:10', type: 'lesson', name: '4 урок' },
+            { start: '12:10', end: '12:30', type: 'break',  name: 'перемена' },
+            { start: '12:30', end: '13:15', type: 'lesson', name: '5 урок' },
+            { start: '13:15', end: '13:25', type: 'break',  name: 'перемена' },
+            { start: '13:25', end: '14:10', type: 'lesson', name: '6 урок' },
+            { start: '14:10', end: '14:20', type: 'break',  name: 'перемена' },
+            { start: '14:20', end: '15:05', type: 'lesson', name: '7 урок' },
+            { start: '15:05', end: '15:10', type: 'break',  name: 'перемена' },
+            { start: '15:10', end: '15:55', type: 'lesson', name: '8 урок' }
+        ];
+
+        var WEATHER_CONDITIONS = {
+            0:  'Ясно',       1: 'Малооблачно', 2: 'Облачно',   3: 'Пасмурно',
+            45: 'Туман',      48: 'Изморозь',   51: 'Морось',   53: 'Морось',
+            55: 'Морось',     61: 'Дождь',      63: 'Дождь',    65: 'Сильный дождь',
+            66: 'Ледяной дождь', 67: 'Ледяной дождь', 71: 'Снег', 73: 'Снег',
+            75: 'Сильный снег',  77: 'Снег',    80: 'Ливень',   81: 'Ливень',
+            82: 'Ливень',     85: 'Снегопад',   86: 'Снегопад', 95: 'Гроза',
+            96: 'Гроза',      99: 'Гроза'
+        };
+        var WEATHER_ICONS = {
+            0: '☀️', 1: '🌤️', 2: '⛅️', 3: '☁️', 45: '🌫️', 48: '🌫️',
+            51: '🌦️', 53: '🌦️', 55: '🌧️', 61: '🌧️', 63: '🌧️', 65: '🌧️',
+            66: '🌧️', 67: '🌧️', 71: '🌨️', 73: '🌨️', 75: '❄️', 77: '❄️',
+            80: '🌦️', 81: '🌧️', 82: '🌧️', 85: '🌨️', 86: '❄️', 95: '⛈️', 96: '⛈️', 99: '⛈️'
         };
 
         var STORAGE_KEY = 'khodynka_apps_layout';
@@ -143,13 +184,110 @@
             } else if (id === 'weather') {
                 el.innerHTML =
                     '<div class="weather-info">' +
-                        '<span class="weather-temp">+18°</span>' +
-                        '<span class="weather-desc">Москва · облачно</span>' +
+                        '<span class="weather-temp">--°</span>' +
+                        '<span class="weather-desc">Москва · загрузка…</span>' +
                     '</div>' +
-                    '<span class="weather-icon" aria-hidden="true">⛅️</span>';
+                    '<span class="weather-icon" aria-hidden="true">🌤️</span>';
+            } else if (id === 'schedule') {
+                el.innerHTML =
+                    '<div class="schedule-current">Уроки закончились</div>' +
+                    '<div class="schedule-time"></div>' +
+                    '<div class="schedule-progress"><div class="schedule-progress-bar"></div></div>';
+            } else if (id === 'lift') {
+                el.innerHTML =
+                    '<div class="lift-title">Вызов лифта</div>' +
+                    '<div class="lift-floors">' +
+                        '<button type="button" class="lift-floor-btn" data-floor="1">1 этаж</button>' +
+                        '<button type="button" class="lift-floor-btn" data-floor="2">2 этаж</button>' +
+                        '<button type="button" class="lift-floor-btn" data-floor="3">3 этаж</button>' +
+                        '<button type="button" class="lift-floor-btn" data-floor="4">4 этаж</button>' +
+                    '</div>' +
+                    '<div class="lift-status"></div>';
+                el.querySelectorAll('.lift-floor-btn').forEach(function (btn) {
+                    btn.addEventListener('click', function () {
+                        callLift(btn.getAttribute('data-floor'), el);
+                    });
+                });
             }
             el.appendChild(makeRemoveBtn());
             return el;
+        }
+
+        // ───── Виджет «Расписание звонков» ─────
+        function getCurrentScheduleItem() {
+            var now = new Date();
+            var currentTime = now.getHours() * 60 + now.getMinutes();
+            for (var i = 0; i < SCHEDULE.length; i++) {
+                var item = SCHEDULE[i];
+                var start = parseInt(item.start.split(':')[0], 10) * 60 + parseInt(item.start.split(':')[1], 10);
+                var end = parseInt(item.end.split(':')[0], 10) * 60 + parseInt(item.end.split(':')[1], 10);
+                if (currentTime >= start && currentTime < end) {
+                    return { item: item, progress: ((currentTime - start) / (end - start)) * 100 };
+                }
+            }
+            return null;
+        }
+
+        function updateScheduleWidget(w) {
+            var current = getCurrentScheduleItem();
+            var currentEl = w.querySelector('.schedule-current');
+            var timeEl = w.querySelector('.schedule-time');
+            var barEl = w.querySelector('.schedule-progress-bar');
+            if (!current) {
+                currentEl.textContent = 'Уроки закончились';
+                timeEl.textContent = '';
+                barEl.style.width = '0%';
+                return;
+            }
+            var now = new Date();
+            var endTime = new Date();
+            var parts = current.item.end.split(':');
+            endTime.setHours(parseInt(parts[0], 10), parseInt(parts[1], 10), 0);
+            var timeLeft = Math.floor((endTime - now) / 1000 / 60);
+            currentEl.textContent = current.item.name;
+            timeEl.textContent = timeLeft > 0 ? 'До звонка: ' + timeLeft + ' мин' : 'Звонок!';
+            barEl.style.width = current.progress + '%';
+        }
+
+        // ───── Виджет «Погода» (реальные данные, Open-Meteo) ─────
+        var weatherTimers = {};
+
+        function updateWeatherWidget(w) {
+            var tempEl = w.querySelector('.weather-temp');
+            var descEl = w.querySelector('.weather-desc');
+            var iconEl = w.querySelector('.weather-icon');
+            fetch('https://api.open-meteo.com/v1/forecast?latitude=55.7522&longitude=37.6156&current_weather=true')
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    var cw = data.current_weather;
+                    if (!cw) throw new Error('no weather');
+                    var code = cw.weathercode;
+                    var temp = Math.round(cw.temperature);
+                    tempEl.textContent = (temp > 0 ? '+' : '') + temp + '°';
+                    descEl.textContent = 'Москва · ' + (WEATHER_CONDITIONS[code] || 'Облачно');
+                    iconEl.textContent = WEATHER_ICONS[code] || '⛅️';
+                })
+                .catch(function () {
+                    tempEl.textContent = '+18°';
+                    descEl.textContent = 'Москва · облачно';
+                    iconEl.textContent = '⛅️';
+                });
+        }
+
+        // ───── Виджет «Лифт» (демо-симуляция) ─────
+        function callLift(floor, w) {
+            var statusEl = w.querySelector('.lift-status');
+            var popup = document.getElementById('liftPopup');
+            statusEl.textContent = '⏳ Ожидание…';
+            w.querySelectorAll('.lift-floor-btn').forEach(function (b) { b.classList.add('disabled'); });
+            setTimeout(function () {
+                statusEl.textContent = '';
+                if (popup) popup.classList.add('shown');
+                setTimeout(function () {
+                    if (popup) popup.classList.remove('shown');
+                    w.querySelectorAll('.lift-floor-btn').forEach(function (b) { b.classList.remove('disabled'); });
+                }, 2000);
+            }, 1500);
         }
 
         function render() {
@@ -158,25 +296,40 @@
                 var el = item.type === 'widget' ? buildWidget(item.id) : buildService(item.id);
                 if (el) grid.appendChild(el);
             });
-            startClock();
+            startWidgetTimers();
         }
 
-        function startClock() {
+        function startWidgetTimers() {
             if (clockTimer) { clearInterval(clockTimer); clockTimer = null; }
+            Object.keys(weatherTimers).forEach(function (k) {
+                clearInterval(weatherTimers[k]);
+                delete weatherTimers[k];
+            });
+
             var faces = grid.querySelectorAll('.widget.clock');
-            if (!faces.length) return;
+            var schedules = grid.querySelectorAll('.widget.schedule');
+            var weathers = grid.querySelectorAll('.widget.weather');
 
             function tick() {
                 var now = new Date();
                 var time = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
                 var date = now.toLocaleDateString('ru-RU', { weekday: 'long', day: 'numeric', month: 'long' });
-                grid.querySelectorAll('.widget.clock').forEach(function (w) {
+                faces.forEach(function (w) {
                     w.querySelector('.clock-time').textContent = time;
                     w.querySelector('.clock-date').textContent = date;
                 });
+                schedules.forEach(updateScheduleWidget);
             }
-            tick();
-            clockTimer = setInterval(tick, 1000);
+            if (faces.length || schedules.length) {
+                tick();
+                clockTimer = setInterval(tick, 1000);
+            }
+            schedules.forEach(updateScheduleWidget);
+
+            weathers.forEach(function (w) {
+                updateWeatherWidget(w);
+                weatherTimers[w.dataset.id] = setInterval(function () { updateWeatherWidget(w); }, 30 * 60 * 1000);
+            });
         }
 
         function present(id) {
@@ -207,7 +360,7 @@
                 if (el) {
                     grid.appendChild(el);
                     saveLayout(readLayoutFromDOM());
-                    startClock();
+                    startWidgetTimers();
                 }
                 closeAddPanel();
             });

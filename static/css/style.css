@@ -817,14 +817,15 @@ hr {
 /* Cover ("ковёр") — фон-обложка во всю ширину с приветствием */
 .cover {
   position: relative;
-  min-height: 320px;
+  height: 45vh;
+  min-height: 300px;
   display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  padding: 28px 0 56px;
+  align-items: center;
+  justify-content: center;
+  padding: 28px 0 72px;
   border-radius: 0 0 30px 30px;
   background-image:
-    linear-gradient(to top, rgba(12, 15, 26, 0.9) 0%, rgba(12, 15, 26, 0.2) 55%, transparent 100%),
+    linear-gradient(to bottom, rgba(12, 15, 26, 0.35) 0%, rgba(12, 15, 26, 0.55) 100%),
     url('../img/apps-wallpaper.svg');
   background-size: cover;
   background-position: center;
@@ -832,24 +833,20 @@ hr {
   overflow: hidden;
 }
 
-/* Текст ковра выровнен по колонке контента */
+/* Текст ковра выровнен по центру */
 .cover__inner {
   width: 100%;
   max-width: 960px;
   margin: 0 auto;
   padding: 0 24px;
-}
-
-.cover__hello {
-  font-size: 16px;
-  color: rgba(255, 255, 255, 0.7);
+  text-align: center;
 }
 
 .cover__name {
   font-size: 34px;
   font-weight: 700;
+  line-height: 1.2;
   letter-spacing: -0.02em;
-  margin-top: 2px;
 }
 
 /* Колонка контента под ковром */
@@ -875,6 +872,87 @@ hr {
 @media (max-width: 600px) {
   .cover__inner,
   .apps-inner { padding-left: 16px; padding-right: 16px; }
+}
+
+/* ═══════════ APPS: DESKTOP (ПК) ═══════════ */
+
+@media (min-width: 1024px) {
+  /* Более высокий и просторный «ковёр» */
+  .cover {
+    height: 52vh;
+    min-height: 360px;
+  }
+
+  .cover__name {
+    font-size: 46px;
+  }
+
+  .apps-inner {
+    max-width: 1080px;
+    padding-bottom: 64px;
+  }
+
+  .services-block {
+    margin-top: -34px;
+    padding: 40px 44px 36px;
+    border-radius: 32px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+  }
+
+  .apps-panel__head {
+    margin-bottom: 20px;
+  }
+
+  .apps-panel__head h2 {
+    font-size: 22px;
+  }
+
+  .services-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+  }
+
+  .service-item {
+    min-height: 150px;
+    padding: 28px 20px;
+    border-radius: 24px;
+  }
+
+  .service-item__icon { font-size: 48px; }
+
+  .service-item__title { font-size: 15px; }
+
+  /* На ПК виджеты занимают всю ширину ряда */
+  .widget { grid-column: 1 / -1; padding: 26px; border-radius: 24px; }
+
+  .widget.clock .clock-time { font-size: 52px; }
+
+  .widget.weather .weather-temp { font-size: 42px; }
+
+  .catalog-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+  }
+
+  .catalog-item {
+    padding: 20px 12px;
+    border-radius: 18px;
+  }
+
+  .catalog-item__icon { font-size: 34px; }
+
+  .catalog-item__label { font-size: 13px; }
+
+  /* Подсветка иконок/элементов при наведении на ПК */
+  .service-item:hover,
+  .widget:hover {
+    transform: translateY(-3px);
+  }
+
+  .icon-btn {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
 }
 
 /* Panel wrapping the grid */
@@ -1019,6 +1097,103 @@ hr {
 }
 
 .weather-icon { font-size: 44px; }
+
+/* Schedule widget */
+.widget.schedule { display: flex; flex-direction: column; gap: 10px; text-align: center; }
+
+.schedule-current { font-size: 18px; font-weight: 700; }
+
+.schedule-time { font-size: 13px; color: rgba(255, 255, 255, 0.55); }
+
+.schedule-progress {
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+}
+
+.schedule-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #7fe6b0, #4facfe);
+  transition: width 1s linear;
+}
+
+/* Lift widget */
+.widget.lift {
+  background:
+    linear-gradient(135deg, rgba(68, 70, 225, 0.4), rgba(93, 95, 224, 0.1)),
+    rgba(255, 255, 255, 0.05);
+}
+
+.lift-title {
+  font-size: 16px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.lift-floors {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.lift-floor-btn {
+  padding: 12px;
+  border: none;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 200ms var(--ease-out), transform 200ms var(--ease-out);
+}
+
+.lift-floor-btn:hover { background: rgba(255, 255, 255, 0.24); }
+
+.lift-floor-btn:active { transform: scale(0.96); }
+
+.lift-floor-btn.disabled { opacity: 0.5; pointer-events: none; cursor: not-allowed; }
+
+.lift-status {
+  height: 20px;
+  margin-top: 10px;
+  text-align: center;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* Lift popup */
+.lift-popup {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 250ms var(--ease-out), visibility 250ms;
+}
+
+.lift-popup.shown { visibility: visible; opacity: 1; }
+
+.lift-popup-content {
+  background: #fff;
+  color: #333;
+  font-weight: 700;
+  font-size: 18px;
+  border-radius: 24px;
+  padding: 30px 40px;
+  text-align: center;
+  transform: translateY(30px);
+  transition: transform 250ms var(--ease-out);
+}
+
+.lift-popup.shown .lift-popup-content { transform: translateY(0); }
 
 /* Remove button (edit mode) */
 .remove-btn {
