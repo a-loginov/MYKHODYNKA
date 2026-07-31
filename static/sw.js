@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mykhodynka-v3';
+const CACHE_NAME = 'mykhodynka-v4';
 const STATIC_ASSETS = [
   '/',
   '/static/css/style.css',
