@@ -343,6 +343,69 @@ hr {
   max-width: 960px;
   margin: 0 auto;
   padding: 24px;
+  padding-bottom: 120px; /* чтобы контент не прятался за нижней навигацией */
+}
+
+/* ───── Bottom navigation (нижняя плашка) ───── */
+
+.bottom-nav {
+  position: fixed;
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%);
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: calc(100% - 32px);
+  max-width: 480px;
+  padding: 8px;
+  border-radius: 24px;
+  background: rgba(18, 18, 38, 0.9);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+}
+
+.bottom-nav__item {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 8px 4px;
+  border-radius: 16px;
+  color: rgba(255, 255, 255, 0.5);
+  text-decoration: none;
+  transition: color 200ms var(--ease-out), background 200ms var(--ease-out);
+}
+
+.bottom-nav__item:hover {
+  color: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.bottom-nav__item.is-active {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.bottom-nav__item.is-active .bottom-nav__label {
+  color: #7fe6b0;
+}
+
+.bottom-nav__icon {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.bottom-nav__label {
+  font-size: 11px;
+  font-weight: 600;
+}
+
+@media (min-width: 1024px) {
+  .bottom-nav { display: none; }
 }
 
 /* Apps page header */
@@ -474,7 +537,6 @@ hr {
   background: rgba(255, 255, 255, 0.06);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
   color: #fff;
   text-decoration: none;
   text-align: left;
@@ -540,7 +602,7 @@ hr {
 .page-inner {
   max-width: 960px;
   margin: 0 auto;
-  padding: 0 24px 48px;
+  padding: 0 24px 120px;
 }
 
 .glass-block {
@@ -550,7 +612,6 @@ hr {
   padding: 28px 20px 24px;
   border-radius: 28px;
   background: rgba(18, 18, 38, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(28px);
   -webkit-backdrop-filter: blur(28px);
 }
@@ -819,7 +880,6 @@ hr {
   padding: 16px 18px;
   border-radius: 18px;
   background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
   transition: background 200ms var(--ease-out);
 }
 
@@ -886,7 +946,6 @@ hr {
   padding: 16px;
   border-radius: 16px;
   background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
   margin-bottom: 18px;
 }
 
@@ -921,7 +980,6 @@ hr {
   gap: 8px;
   padding: 16px 8px;
   border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(255, 255, 255, 0.05);
   color: #fff;
   font-family: inherit;
@@ -1057,7 +1115,7 @@ hr {
   align-items: center;
   justify-content: center;
   padding: 28px 0 72px;
-  border-radius: 0 0 30px 30px;
+  border-radius: 0;
   background-image:
     linear-gradient(to bottom, rgba(12, 15, 26, 0.35) 0%, rgba(12, 15, 26, 0.55) 100%),
     url('../img/apps-wallpaper.svg');
@@ -1087,7 +1145,7 @@ hr {
 .apps-inner {
   max-width: 960px;
   margin: 0 auto;
-  padding: 0 24px 32px;
+  padding: 0 24px 120px;
 }
 
 /* Блок «Сервисы» наезжает на ковёр снизу */
@@ -1098,7 +1156,6 @@ hr {
   padding: 28px 20px 24px;
   border-radius: 28px;
   background: rgba(18, 18, 38, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(28px);
   -webkit-backdrop-filter: blur(28px);
 }
@@ -1249,7 +1306,6 @@ hr {
   padding: 24px 16px;
   border-radius: 22px;
   background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   color: #fff;
@@ -1284,7 +1340,6 @@ hr {
   padding: 20px;
   border-radius: 22px;
   background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   color: #fff;
@@ -1527,7 +1582,6 @@ hr {
   padding: 16px 8px;
   border-radius: 16px;
   background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
   color: #fff;
   font-family: inherit;
   cursor: pointer;

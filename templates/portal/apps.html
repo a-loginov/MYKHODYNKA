@@ -2,29 +2,403 @@
 
 {% block title %}MYKHODYNKA — Сервисы{% endblock %}
 
-{% block body_class %}apps-page{% endblock %}
+{% block body_class %}apps-page apps2-page{% endblock %}
 
 {% block content %}
-<section class="cover">
-    <div class="cover__inner">
-        <h1 class="cover__name">Здравствуйте,<br>{{ name or 'Житель Ходынки' }}</h1>
-    </div>
-</section>
+<style>
+    /* ═══════════ APPS2: ЛЁГКАЯ ТЕМА (адаптация референса) ═══════════ */
+    .apps2-page.portal-body {
+        background: url('{{ url_for("static", filename="img/apps-wallpaper.svg") }}') top center no-repeat, #f4f6fb;
+        background-size: cover;
+        background-position: top center;
+        background-repeat: no-repeat;
+        min-height: 100vh;
+        color: #1b1f3b;
+        overflow-x: hidden;
+    }
 
-<div class="apps-inner">
-    <div class="services-block">
-        <div class="apps-panel__head">
-            <h2>Сервисы</h2>
-            <button type="button" class="icon-btn" id="editToggle" aria-pressed="false">
-                <span id="editLabel">Настроить</span>
-            </button>
+    .apps2-page .portal-content {
+        max-width: none;
+        padding: 0 0 120px;
+    }
+
+    /* ───── badge в углу (аналог campus-badge) ───── */
+    .apps2-badge {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1000;
+        background: rgba(255, 255, 255, 0.9);
+        color: #4446E1;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+    }
+
+    /* ───── контейнер: 430 → 1200 → 1280 ───── */
+    .apps2-container {
+        position: relative;
+        z-index: 1;
+        max-width: 430px;
+        margin: 0 auto;
+        padding: 20px;
+        min-height: 100vh;
+    }
+
+    .apps2-greeting {
+        margin-bottom: 28px;
+        color: #fff;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .apps2-greeting-small {
+        font-size: 1rem;
+        opacity: 0.92;
+        margin-bottom: 5px;
+    }
+
+    .apps2-greeting-name {
+        font-size: 2rem;
+        font-weight: 700;
+        line-height: 1.1;
+    }
+
+    /* ───── сетка виджетов (моб: 2 колонки) ───── */
+    .apps2-widgets {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+        margin-bottom: 28px;
+    }
+
+    .apps2-widget {
+        position: relative;
+        border-radius: 18px;
+        padding: 18px;
+        background: #fff;
+        color: #1b1f3b;
+        box-shadow: 0 4px 15px rgba(20, 24, 60, 0.08);
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        overflow: hidden;
+    }
+
+    .apps2-widget:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(20, 24, 60, 0.14); }
+
+    .apps2-widget .apps2-widget-remove {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        width: 24px;
+        height: 24px;
+        border: none;
+        border-radius: 50%;
+        background: rgba(0, 0, 0, 0.06);
+        color: #1b1f3b;
+        font-size: 15px;
+        line-height: 1;
+        cursor: pointer;
+        opacity: 0;
+        transition: opacity 0.15s ease;
+    }
+
+    .apps2-page.edit-mode .apps2-widget-remove { opacity: 1; }
+
+    /* цветные виджеты */
+    .apps2-widget.brand { background: linear-gradient(to right, #4446E1, #5d5fe0); color: #fff; }
+    .apps2-widget.weather { background: linear-gradient(to right, #4facfe, #00f2fe); color: #fff; }
+    .apps2-widget.lift { background: linear-gradient(to right, #4446E1, #5d5fe0); color: #fff; }
+
+    .apps2-widget-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        background: rgba(0, 0, 0, 0.05);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        margin-bottom: 4px;
+    }
+
+    .apps2-widget.brand .apps2-widget-icon,
+    .apps2-widget.weather .apps2-widget-icon,
+    .apps2-widget.lift .apps2-widget-icon { background: rgba(255, 255, 255, 0.22); color: #fff; }
+
+    .apps2-widget.brand .apps2-widget-icon,
+    .apps2-widget.weather .apps2-widget-icon,
+    .apps2-widget.lift .apps2-widget-icon i { color: #fff; }
+
+    .apps2-service-icon i { font-size: 30px; color: #4446E1; }
+
+    .apps2-widget-icon i { font-size: 20px; }
+
+    .apps2-widget-title { font-size: 0.95rem; font-weight: 700; }
+    .apps2-widget-subtitle { font-size: 0.72rem; opacity: 0.75; }
+
+    /* часы */
+    .apps2-widget.clock { text-align: center; justify-content: center; }
+    .apps2-widget.clock .apps2-clock-time { font-size: 40px; font-weight: 700; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+    .apps2-widget.clock .apps2-clock-date { font-size: 0.8rem; opacity: 0.55; }
+
+    /* погода */
+    .apps2-widget.weather .apps2-weather-row { display: flex; align-items: center; justify-content: space-between; }
+    .apps2-widget.weather .apps2-weather-temp { font-size: 34px; font-weight: 700; line-height: 1; }
+    .apps2-widget.weather .apps2-weather-desc { font-size: 0.78rem; opacity: 0.9; margin-top: 4px; }
+    .apps2-widget.weather .apps2-weather-icon { font-size: 34px; color: #fff; }
+
+    /* лифт */
+    .apps2-widget.lift .apps2-lift-floors { display: flex; gap: 8px; margin-top: 8px; }
+    .apps2-widget.lift .apps2-lift-floor {
+        flex: 1;
+        padding: 10px 0;
+        border: none;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.22);
+        color: #fff;
+        font-weight: 700;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: background 0.2s ease;
+    }
+    .apps2-widget.lift .apps2-lift-floor:hover { background: rgba(255, 255, 255, 0.34); }
+    .apps2-widget.lift .apps2-lift-floor.disabled { opacity: 0.4; pointer-events: none; }
+    .apps2-widget.lift .apps2-lift-status { min-height: 18px; font-size: 0.8rem; opacity: 0.9; }
+
+    /* ───── сетка сервисов ───── */
+    .apps2-services {
+        margin-bottom: 30px;
+    }
+
+    .apps2-services-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 18px;
+    }
+
+    .apps2-services-title { font-size: 1.2rem; font-weight: 700; color: #fff; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35); }
+
+    .apps2-services-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        gap: 22px;
+    }
+
+    .apps2-service {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-decoration: none;
+        color: #fff;
+        cursor: pointer;
+        transition: transform 0.2s ease;
+    }
+
+    .apps2-service:hover { transform: translateY(-5px); }
+
+    .apps2-service-icon {
+        width: 78px;
+        height: 78px;
+        background: #fff;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 15px rgba(20, 24, 60, 0.08);
+        margin-bottom: 10px;
+        font-size: 30px;
+        transition: box-shadow 0.3s ease, transform 0.3s ease;
+    }
+
+    .apps2-service:hover .apps2-service-icon {
+        box-shadow: 0 8px 25px rgba(20, 24, 60, 0.16);
+        transform: scale(1.05);
+    }
+
+    .apps2-service-title {
+        font-size: 0.85rem;
+        text-align: center;
+        line-height: 1.3;
+        font-weight: 600;
+        max-width: 100px;
+        color: #fff;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+    }
+
+    /* кнопка «Добавить» */
+    .apps2-add-btn {
+        display: block;
+        width: 100%;
+        margin-top: 22px;
+        padding: 14px;
+        border: 2px dashed rgba(68, 70, 225, 0.4);
+        border-radius: 16px;
+        background: transparent;
+        color: #4446E1;
+        font-size: 0.9rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-family: inherit;
+    }
+
+    .apps2-add-btn:hover { background: rgba(68, 70, 225, 0.06); border-color: #4446E1; }
+
+    .apps2-btn-secondary {
+        padding: 8px 14px;
+        border: none;
+        border-radius: 12px;
+        background: rgba(68, 70, 225, 0.1);
+        color: #4446E1;
+        font-size: 0.8rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-family: inherit;
+    }
+
+    .apps2-btn-secondary:hover { background: rgba(68, 70, 225, 0.18); }
+
+    /* ───── sidebar (правая колонка) ───── */
+    .apps2-sidebar-card {
+        background: #fff;
+        border-radius: 20px;
+        padding: 22px;
+        box-shadow: 0 4px 15px rgba(20, 24, 60, 0.08);
+        margin-bottom: 18px;
+    }
+
+    .apps2-sidebar-title { font-size: 1.05rem; font-weight: 700; color: #1b1f3b; margin-bottom: 12px; }
+
+    .apps2-sidebar-list { list-style: none; }
+    .apps2-sidebar-list li {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 0;
+        border-bottom: 1px solid #f0f2f8;
+        font-size: 0.85rem;
+        color: #333;
+    }
+    .apps2-sidebar-list li:last-child { border-bottom: none; }
+    .apps2-sidebar-list .dot { width: 8px; height: 8px; border-radius: 50%; background: #4446E1; flex-shrink: 0; }
+
+    /* ───── десктоп-сетка 2fr/1fr ───── */
+    .apps2-layout { display: block; }
+    .apps2-sidebar { display: none; }
+
+    .apps2-service-remove { position: absolute; }
+
+    /* ───── планшет ≥768 ───── */
+    @media (min-width: 768px) {
+        .apps2-container { max-width: 1200px; }
+
+        .apps2-widgets {
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+        .apps2-widget.lift { grid-column: span 2; grid-row: span 2; }
+        .apps2-widget.weather { grid-column: span 1; }
+        .apps2-widget.brand { grid-column: span 1; }
+        .apps2-widget.clock { grid-column: span 2; }
+
+        .apps2-widgets .apps2-widget:not(.lift):not(.weather):not(.brand):not(.clock) { grid-column: span 2; }
+    }
+
+    /* ───── десктоп ≥1024 ───── */
+    @media (min-width: 1024px) {
+        .apps2-container { max-width: 1280px; }
+
+        .apps2-layout {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            align-items: start;
+        }
+
+        .apps2-greeting-name { font-size: 2.6rem; }
+
+        .apps2-widgets {
+            grid-template-columns: repeat(3, 1fr);
+            grid-auto-rows: minmax(120px, auto);
+            gap: 18px;
+        }
+
+        .apps2-widget.lift { grid-column: 1; grid-row: span 2; }
+        .apps2-widget.clock { grid-column: 2; }
+        .apps2-widget.weather { grid-column: 3; }
+        .apps2-widgets .apps2-widget:not(.lift):not(.clock):not(.weather) { grid-column: span 1; }
+
+        .apps2-sidebar { display: block; }
+    }
+
+    /* ───── мобильный ≤600 ───── */
+    @media (max-width: 600px) {
+        .apps2-page.portal-body { background-size: cover; }
+        .apps2-container { padding: 15px; }
+        .apps2-badge { top: 15px; right: 15px; font-size: 0.7rem; padding: 6px 12px; }
+        .apps2-widgets { gap: 10px; }
+        .apps2-greeting-name { font-size: 1.7rem; }
+        .apps2-services-grid { grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 18px; }
+        .apps2-service-icon { width: 68px; height: 68px; font-size: 26px; }
+    }
+
+    /* sortable + drag */
+    .sortable-ghost { opacity: 0.4; }
+    .sortable-drag { opacity: 0.9; box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2); }
+</style>
+
+<div class="apps2-badge">Ходынка</div>
+
+<div class="apps2-container">
+    <div class="apps2-greeting">
+        <div class="apps2-greeting-small">Здравствуйте,</div>
+        <div class="apps2-greeting-name">{{ name or 'Житель' }}</div>
+    </div>
+
+    <div class="apps2-layout">
+        <div class="apps2-main">
+            <div class="apps2-widgets" id="servicesGrid"><!-- рендерится из JS --></div>
+
+            <div class="apps2-services">
+                <div class="apps2-services-head">
+                    <h2 class="apps2-services-title">Сервисы</h2>
+                    <button type="button" class="apps2-btn-secondary" id="editToggle" aria-pressed="false">
+                        <span id="editLabel">Настроить</span>
+                    </button>
+                </div>
+
+                <div class="apps2-services-grid" id="servicesGridList"><!-- рендерится из JS --></div>
+
+                <button type="button" class="apps2-add-btn" id="addServiceBtn">+ Добавить сервис или виджет</button>
+            </div>
         </div>
 
-        <div class="services-grid" id="servicesGrid"><!-- рендерится из JS --></div>
+        <aside class="apps2-sidebar">
+            <div class="apps2-sidebar-card">
+                <h3 class="apps2-sidebar-title">Добро пожаловать</h3>
+                <p style="font-size: 0.9rem; color: #555; line-height: 1.5;">Рады видеть вас в портале жилого комплекса «Ходынка». Здесь можно оформить пропуск, подать заявку в ЖК, связаться с консьержем и многое другое.</p>
+            </div>
 
-        <button type="button" class="add-service-btn" id="addServiceBtn">
-            + Добавить сервис или виджет
-        </button>
+            <div class="apps2-sidebar-card">
+                <h3 class="apps2-sidebar-title">Быстрые действия</h3>
+                <ul class="apps2-sidebar-list">
+                    <li><span class="dot"></span>Оформить пропуск</li>
+                    <li><span class="dot"></span>Подать заявку в ЖК</li>
+                    <li><span class="dot"></span>Передать показания счётчиков</li>
+                    <li><span class="dot"></span>Забронировать коворкинг</li>
+                </ul>
+            </div>
+        </aside>
     </div>
 </div>
 
@@ -50,23 +424,23 @@
     (function () {
         // Каталог сервисов ЖК (url берётся из Flask-маршрутов)
         var SERVICES = {
-            passes:        { title: 'Пропуска',      icon: '🚪', url: '{{ url_for("portal.passes") }}' },
-            requests:      { title: 'Заявки в ЖК',   icon: '🔧', url: '{{ url_for("portal.requests_page") }}' },
-            appeals:       { title: 'Обращения',     icon: '📋', url: '{{ url_for("portal.appeals") }}' },
-            messages:      { title: 'Сообщения',     icon: '💬', url: '{{ url_for("portal.messages") }}' },
-            events:        { title: 'Мероприятия',   icon: '🗓️', url: '{{ url_for("portal.passes") }}' },
-            announcements: { title: 'Объявления',    icon: '📢', url: '{{ url_for("portal.messages") }}' },
-            meters:        { title: 'Счётчики',      icon: '🧮', url: '{{ url_for("portal.meters") }}' },
-            parking:       { title: 'Парковка',      icon: '🅿️', url: '{{ url_for("portal.parking") }}' },
-            concierge:     { title: 'Консьерж',      icon: '🛎️', url: '{{ url_for("portal.concierge") }}' },
-            coworking:     { title: 'Коворкинг',     icon: '💼', url: '{{ url_for("portal.coworking") }}' }
+            passes:        { title: 'Пропуска',      icon: 'fa-solid fa-door-open', url: '{{ url_for("portal.passes") }}' },
+            requests:      { title: 'Заявки в ЖК',   icon: 'fa-solid fa-screwdriver-wrench', url: '{{ url_for("portal.requests_page") }}' },
+            appeals:       { title: 'Обращения',     icon: 'fa-regular fa-clipboard', url: '{{ url_for("portal.appeals") }}' },
+            messages:      { title: 'Сообщения',     icon: 'fa-regular fa-comment', url: '{{ url_for("portal.messages") }}' },
+            events:        { title: 'Мероприятия',   icon: 'fa-regular fa-calendar', url: '{{ url_for("portal.passes") }}' },
+            announcements: { title: 'Объявления',    icon: 'fa-solid fa-bullhorn', url: '{{ url_for("portal.messages") }}' },
+            meters:        { title: 'Счётчики',      icon: 'fa-solid fa-gauge', url: '{{ url_for("portal.meters") }}' },
+            parking:       { title: 'Парковка',      icon: 'fa-solid fa-square-parking', url: '{{ url_for("portal.parking") }}' },
+            concierge:     { title: 'Консьерж',      icon: 'fa-solid fa-bell-concierge', url: '{{ url_for("portal.concierge") }}' },
+            coworking:     { title: 'Коворкинг',     icon: 'fa-solid fa-briefcase', url: '{{ url_for("portal.coworking") }}' }
         };
 
         var WIDGETS = {
-            clock:    { label: 'Часы',        icon: '🕐' },
-            weather:  { label: 'Погода',      icon: '⛅️' },
-            schedule: { label: 'Расписание',  icon: '🔔' },
-            lift:     { label: 'Лифт',        icon: '🛗' }
+            clock:   { label: 'Часы',     icon: 'fa-regular fa-clock', kind: 'clock' },
+            weather: { label: 'Погода',   icon: 'fa-solid fa-cloud-sun', kind: 'weather' },
+            lift:    { label: 'Лифт',     icon: 'fa-solid fa-elevator', kind: 'lift' },
+            brand:   { label: 'Аккаунт',  icon: 'fa-solid fa-house', kind: 'brand' }
         };
 
         // Расписание (демо — как в референсе)
@@ -89,7 +463,7 @@
         ];
 
         var WEATHER_CONDITIONS = {
-            0:  'Ясно',       1: 'Малооблачно', 2: 'Облачно',   3: 'Пасмурно',
+            0: 'Ясно',       1: 'Малооблачно', 2: 'Облачно',   3: 'Пасмурно',
             45: 'Туман',      48: 'Изморозь',   51: 'Морось',   53: 'Морось',
             55: 'Морось',     61: 'Дождь',      63: 'Дождь',    65: 'Сильный дождь',
             66: 'Ледяной дождь', 67: 'Ледяной дождь', 71: 'Снег', 73: 'Снег',
@@ -98,23 +472,29 @@
             96: 'Гроза',      99: 'Гроза'
         };
         var WEATHER_ICONS = {
-            0: '☀️', 1: '🌤️', 2: '⛅️', 3: '☁️', 45: '🌫️', 48: '🌫️',
-            51: '🌦️', 53: '🌦️', 55: '🌧️', 61: '🌧️', 63: '🌧️', 65: '🌧️',
-            66: '🌧️', 67: '🌧️', 71: '🌨️', 73: '🌨️', 75: '❄️', 77: '❄️',
-            80: '🌦️', 81: '🌧️', 82: '🌧️', 85: '🌨️', 86: '❄️', 95: '⛈️', 96: '⛈️', 99: '⛈️'
+            0: 'fa-solid fa-sun', 1: 'fa-solid fa-sun', 2: 'fa-solid fa-cloud-sun', 3: 'fa-solid fa-cloud',
+            45: 'fa-solid fa-smog', 48: 'fa-solid fa-smog',
+            51: 'fa-solid fa-cloud-rain', 53: 'fa-solid fa-cloud-rain', 55: 'fa-solid fa-cloud-showers-heavy',
+            61: 'fa-solid fa-cloud-rain', 63: 'fa-solid fa-cloud-rain', 65: 'fa-solid fa-cloud-showers-heavy',
+            66: 'fa-solid fa-cloud-showers-heavy', 67: 'fa-solid fa-cloud-showers-heavy',
+            71: 'fa-solid fa-snowflake', 73: 'fa-solid fa-snowflake', 75: 'fa-solid fa-snowflake',
+            77: 'fa-solid fa-snowflake', 80: 'fa-solid fa-cloud-showers-heavy', 81: 'fa-solid fa-cloud-showers-heavy',
+            82: 'fa-solid fa-cloud-showers-heavy', 85: 'fa-solid fa-snowflake', 86: 'fa-solid fa-snowflake',
+            95: 'fa-solid fa-cloud-bolt', 96: 'fa-solid fa-cloud-bolt', 99: 'fa-solid fa-cloud-bolt'
         };
 
-        var STORAGE_KEY = 'khodynka_apps_layout';
+        var STORAGE_KEY = 'khodynka_apps2_layout_v2';
         var DEFAULT_LAYOUT = [
-            { type: 'service', id: 'passes' },
-            { type: 'service', id: 'requests' },
-            { type: 'service', id: 'appeals' },
-            { type: 'service', id: 'messages' },
-            { type: 'service', id: 'events' },
-            { type: 'service', id: 'announcements' }
+            { type: 'widget', id: 'lift' },
+            { type: 'widget', id: 'clock' },
+            { type: 'widget', id: 'weather' },
+            { type: 'widget', id: 'brand' }
         ];
 
+        var DEFAULT_SERVICES = ['passes', 'requests', 'appeals', 'messages', 'meters', 'parking', 'concierge', 'coworking', 'events', 'announcements'];
+
         var grid = document.getElementById('servicesGrid');
+        var listGrid = document.getElementById('servicesGridList');
         var editToggle = document.getElementById('editToggle');
         var editLabel = document.getElementById('editLabel');
         var addBtn = document.getElementById('addServiceBtn');
@@ -145,7 +525,7 @@
         function makeRemoveBtn() {
             var btn = document.createElement('button');
             btn.type = 'button';
-            btn.className = 'remove-btn';
+            btn.className = 'apps2-widget-remove';
             btn.setAttribute('aria-label', 'Убрать');
             btn.textContent = '×';
             btn.addEventListener('click', function (e) {
@@ -154,70 +534,57 @@
                 tile.remove();
                 saveLayout(readLayoutFromDOM());
                 renderCatalog();
+                renderServicesList();
             });
             return btn;
         }
 
-        function buildService(id) {
-            var s = SERVICES[id];
-            if (!s) return null;
-            var el = document.createElement('div');
-            el.className = 'service-item';
-            el.dataset.type = 'service';
-            el.dataset.id = id;
-            el.innerHTML =
-                '<span class="service-item__icon" aria-hidden="true">' + s.icon + '</span>' +
-                '<span class="service-item__title">' + s.title + '</span>';
-            el.appendChild(makeRemoveBtn());
-            el.addEventListener('click', function () {
-                if (!document.body.classList.contains('edit-mode')) {
-                    window.location.href = s.url;
-                }
-            });
-            return el;
-        }
-
         function buildWidget(id) {
+            var w = WIDGETS[id];
             var el = document.createElement('div');
-            el.className = 'widget ' + id;
+            el.className = 'apps2-widget ' + w.kind;
             el.dataset.type = 'widget';
             el.dataset.id = id;
 
             if (id === 'clock') {
-                el.innerHTML = '<div class="clock-time">--:--</div><div class="clock-date"></div>';
+                el.innerHTML =
+                    '<div class="apps2-clock-time">--:--</div>' +
+                    '<div class="apps2-clock-date"></div>';
             } else if (id === 'weather') {
                 el.innerHTML =
-                    '<div class="weather-info">' +
-                        '<span class="weather-temp">--°</span>' +
-                        '<span class="weather-desc">Москва · загрузка…</span>' +
-                    '</div>' +
-                    '<span class="weather-icon" aria-hidden="true">🌤️</span>';
-            } else if (id === 'schedule') {
-                el.innerHTML =
-                    '<div class="schedule-current">Уроки закончились</div>' +
-                    '<div class="schedule-time"></div>' +
-                    '<div class="schedule-progress"><div class="schedule-progress-bar"></div></div>';
+                    '<div class="apps2-weather-row">' +
+                        '<div class="apps2-weather-info">' +
+                            '<div class="apps2-weather-temp">--°</div>' +
+                            '<div class="apps2-weather-desc">Москва · загрузка…</div>' +
+                        '</div>' +
+                        '<span class="apps2-weather-icon" aria-hidden="true"><i class="fa-solid fa-cloud-sun"></i></span>' +
+                    '</div>';
             } else if (id === 'lift') {
                 el.innerHTML =
-                    '<div class="lift-title">Вызов лифта</div>' +
-                    '<div class="lift-floors">' +
-                        '<button type="button" class="lift-floor-btn" data-floor="1">1 этаж</button>' +
-                        '<button type="button" class="lift-floor-btn" data-floor="2">2 этаж</button>' +
-                        '<button type="button" class="lift-floor-btn" data-floor="3">3 этаж</button>' +
-                        '<button type="button" class="lift-floor-btn" data-floor="4">4 этаж</button>' +
+                    '<div class="apps2-widget-icon" aria-hidden="true"><i class="fa-solid fa-elevator"></i></div>' +
+                    '<div class="apps2-widget-title">Вызов лифта</div>' +
+                    '<div class="apps2-lift-floors">' +
+                        '<button type="button" class="apps2-lift-floor" data-floor="1">1</button>' +
+                        '<button type="button" class="apps2-lift-floor" data-floor="2">2</button>' +
+                        '<button type="button" class="apps2-lift-floor" data-floor="3">3</button>' +
+                        '<button type="button" class="apps2-lift-floor" data-floor="4">4</button>' +
                     '</div>' +
-                    '<div class="lift-status"></div>';
-                el.querySelectorAll('.lift-floor-btn').forEach(function (btn) {
+                    '<div class="apps2-lift-status"></div>';
+                el.querySelectorAll('.apps2-lift-floor').forEach(function (btn) {
                     btn.addEventListener('click', function () {
                         callLift(btn.getAttribute('data-floor'), el);
                     });
                 });
+            } else if (id === 'brand') {
+                el.innerHTML =
+                    '<div class="apps2-widget-icon" aria-hidden="true"><i class="fa-solid fa-house"></i></div>' +
+                    '<div class="apps2-widget-title">Аккаунт</div>' +
+                    '<div class="apps2-widget-subtitle">Ваш профиль</div>';
             }
             el.appendChild(makeRemoveBtn());
             return el;
         }
 
-        // ───── Виджет «Расписание звонков» ─────
         function getCurrentScheduleItem() {
             var now = new Date();
             var currentTime = now.getHours() * 60 + now.getMinutes();
@@ -232,34 +599,14 @@
             return null;
         }
 
-        function updateScheduleWidget(w) {
-            var current = getCurrentScheduleItem();
-            var currentEl = w.querySelector('.schedule-current');
-            var timeEl = w.querySelector('.schedule-time');
-            var barEl = w.querySelector('.schedule-progress-bar');
-            if (!current) {
-                currentEl.textContent = 'Уроки закончились';
-                timeEl.textContent = '';
-                barEl.style.width = '0%';
-                return;
-            }
-            var now = new Date();
-            var endTime = new Date();
-            var parts = current.item.end.split(':');
-            endTime.setHours(parseInt(parts[0], 10), parseInt(parts[1], 10), 0);
-            var timeLeft = Math.floor((endTime - now) / 1000 / 60);
-            currentEl.textContent = current.item.name;
-            timeEl.textContent = timeLeft > 0 ? 'До звонка: ' + timeLeft + ' мин' : 'Звонок!';
-            barEl.style.width = current.progress + '%';
-        }
+        function updateScheduleWidget(w) { /* не используется в новом виде */ }
 
-        // ───── Виджет «Погода» (реальные данные, Open-Meteo) ─────
         var weatherTimers = {};
 
         function updateWeatherWidget(w) {
-            var tempEl = w.querySelector('.weather-temp');
-            var descEl = w.querySelector('.weather-desc');
-            var iconEl = w.querySelector('.weather-icon');
+            var tempEl = w.querySelector('.apps2-weather-temp');
+            var descEl = w.querySelector('.apps2-weather-desc');
+            var iconEl = w.querySelector('.apps2-weather-icon');
             fetch('https://api.open-meteo.com/v1/forecast?latitude=55.7522&longitude=37.6156&current_weather=true')
                 .then(function (r) { return r.json(); })
                 .then(function (data) {
@@ -269,27 +616,28 @@
                     var temp = Math.round(cw.temperature);
                     tempEl.textContent = (temp > 0 ? '+' : '') + temp + '°';
                     descEl.textContent = 'Москва · ' + (WEATHER_CONDITIONS[code] || 'Облачно');
-                    iconEl.textContent = WEATHER_ICONS[code] || '⛅️';
+                    var icon = iconEl.querySelector('i');
+                    if (icon) icon.className = WEATHER_ICONS[code] || 'fa-solid fa-cloud-sun';
                 })
                 .catch(function () {
                     tempEl.textContent = '+18°';
                     descEl.textContent = 'Москва · облачно';
-                    iconEl.textContent = '⛅️';
+                    var icon = iconEl.querySelector('i');
+                    if (icon) icon.className = 'fa-solid fa-cloud-sun';
                 });
         }
 
-        // ───── Виджет «Лифт» (демо-симуляция) ─────
         function callLift(floor, w) {
-            var statusEl = w.querySelector('.lift-status');
+            var statusEl = w.querySelector('.apps2-lift-status');
             var popup = document.getElementById('liftPopup');
             statusEl.textContent = '⏳ Ожидание…';
-            w.querySelectorAll('.lift-floor-btn').forEach(function (b) { b.classList.add('disabled'); });
+            w.querySelectorAll('.apps2-lift-floor').forEach(function (b) { b.classList.add('disabled'); });
             setTimeout(function () {
                 statusEl.textContent = '';
                 if (popup) popup.classList.add('shown');
                 setTimeout(function () {
                     if (popup) popup.classList.remove('shown');
-                    w.querySelectorAll('.lift-floor-btn').forEach(function (b) { b.classList.remove('disabled'); });
+                    w.querySelectorAll('.apps2-lift-floor').forEach(function (b) { b.classList.remove('disabled'); });
                 }, 2000);
             }, 1500);
         }
@@ -297,7 +645,7 @@
         function render() {
             grid.innerHTML = '';
             loadLayout().forEach(function (item) {
-                var el = item.type === 'widget' ? buildWidget(item.id) : buildService(item.id);
+                var el = item.type === 'widget' ? buildWidget(item.id) : null;
                 if (el) grid.appendChild(el);
             });
             startWidgetTimers();
@@ -310,29 +658,41 @@
                 delete weatherTimers[k];
             });
 
-            var faces = grid.querySelectorAll('.widget.clock');
-            var schedules = grid.querySelectorAll('.widget.schedule');
-            var weathers = grid.querySelectorAll('.widget.weather');
+            var faces = grid.querySelectorAll('.apps2-widget.clock');
+            var weathers = grid.querySelectorAll('.apps2-widget.weather');
 
             function tick() {
                 var now = new Date();
                 var time = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
                 var date = now.toLocaleDateString('ru-RU', { weekday: 'long', day: 'numeric', month: 'long' });
                 faces.forEach(function (w) {
-                    w.querySelector('.clock-time').textContent = time;
-                    w.querySelector('.clock-date').textContent = date;
+                    w.querySelector('.apps2-clock-time').textContent = time;
+                    w.querySelector('.apps2-clock-date').textContent = date;
                 });
-                schedules.forEach(updateScheduleWidget);
             }
-            if (faces.length || schedules.length) {
+            if (faces.length) {
                 tick();
                 clockTimer = setInterval(tick, 1000);
             }
-            schedules.forEach(updateScheduleWidget);
 
             weathers.forEach(function (w) {
                 updateWeatherWidget(w);
                 weatherTimers[w.dataset.id] = setInterval(function () { updateWeatherWidget(w); }, 30 * 60 * 1000);
+            });
+        }
+
+        function renderServicesList() {
+            listGrid.innerHTML = '';
+            DEFAULT_SERVICES.forEach(function (id) {
+                var s = SERVICES[id];
+                if (!s) return;
+                var a = document.createElement('a');
+                a.className = 'apps2-service';
+                a.href = s.url;
+                a.innerHTML =
+                    '<div class="apps2-service-icon" aria-hidden="true"><i class="' + s.icon + '"></i></div>' +
+                    '<div class="apps2-service-title">' + s.title + '</div>';
+                listGrid.appendChild(a);
             });
         }
 
@@ -342,9 +702,6 @@
 
         function renderCatalog() {
             catalogGrid.innerHTML = '';
-            Object.keys(SERVICES).forEach(function (id) {
-                catalogGrid.appendChild(catalogTile('service', id, SERVICES[id].icon, SERVICES[id].title));
-            });
             Object.keys(WIDGETS).forEach(function (id) {
                 catalogGrid.appendChild(catalogTile('widget', id, WIDGETS[id].icon, WIDGETS[id].label));
             });
@@ -357,11 +714,11 @@
             // сервисы уникальны; виджеты можно добавлять повторно
             if (type === 'service' && present(id)) btn.disabled = true;
             btn.innerHTML =
-                '<span class="catalog-item__icon" aria-hidden="true">' + icon + '</span>' +
+                '<span class="catalog-item__icon" aria-hidden="true"><i class="' + icon + '"></i></span>' +
                 '<span class="catalog-item__label">' + label + '</span>';
             btn.addEventListener('click', function () {
-                var el = type === 'widget' ? buildWidget(id) : buildService(id);
-                if (el) {
+                var el = type === 'widget' ? buildWidget(id) : null;
+                if (type === 'widget' && el) {
                     grid.appendChild(el);
                     saveLayout(readLayoutFromDOM());
                     startWidgetTimers();
@@ -415,6 +772,7 @@
         });
 
         render();
+        renderServicesList();
     })();
 </script>
 {% endblock %}
