@@ -55,7 +55,11 @@
             appeals:       { title: 'Обращения',     icon: '📋', url: '{{ url_for("portal.appeals") }}' },
             messages:      { title: 'Сообщения',     icon: '💬', url: '{{ url_for("portal.messages") }}' },
             events:        { title: 'Мероприятия',   icon: '🗓️', url: '{{ url_for("portal.passes") }}' },
-            announcements: { title: 'Объявления',    icon: '📢', url: '{{ url_for("portal.messages") }}' }
+            announcements: { title: 'Объявления',    icon: '📢', url: '{{ url_for("portal.messages") }}' },
+            meters:        { title: 'Счётчики',      icon: '🧮', url: '{{ url_for("portal.meters") }}' },
+            parking:       { title: 'Парковка',      icon: '🅿️', url: '{{ url_for("portal.parking") }}' },
+            concierge:     { title: 'Консьерж',      icon: '🛎️', url: '{{ url_for("portal.concierge") }}' },
+            coworking:     { title: 'Коворкинг',     icon: '💼', url: '{{ url_for("portal.coworking") }}' }
         };
 
         var WIDGETS = {

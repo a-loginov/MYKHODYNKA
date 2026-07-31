@@ -538,6 +538,13 @@ hr {
   -webkit-backdrop-filter: blur(28px);
 }
 
+.service-intro {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.55);
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+
 @media (max-width: 600px) {
   .page-inner { padding-left: 16px; padding-right: 16px; }
 }

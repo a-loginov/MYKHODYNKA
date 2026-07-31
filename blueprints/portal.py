@@ -111,3 +111,63 @@ def appeals():
 @portal.route('/messages')
 def messages():
     return render_template('portal/messages.html')
+
+
+# ───── Счётчики ─────
+
+@portal.route('/meters')
+def meters():
+    return render_template('portal/service_page.html', title='Счётчики',
+                           subtitle='Показания воды, света и тепла', icon='🧮',
+                           intro='Передавайте показания счётчиков и следите за расходами.',
+                           items=[
+                               {"icon": "💧", "title": "Передать показания", "desc": "Вода: холодная и горячая"},
+                               {"icon": "💡", "title": "Электроэнергия", "desc": "Передать и посмотреть историю"},
+                               {"icon": "🔥", "title": "Тепло и отопление", "desc": "Показания тепловых счётчиков"},
+                               {"icon": "📊", "title": "История начислений", "desc": "Динамика по месяцам"},
+                           ])
+
+
+# ───── Парковка ─────
+
+@portal.route('/parking')
+def parking():
+    return render_template('portal/service_page.html', title='Парковка',
+                           subtitle='Места, абонементы, гостевой доступ', icon='🅿️',
+                           intro='Управление парковочными местами и абонементами.',
+                           items=[
+                               {"icon": "🅿️", "title": "Мои места", "desc": "Список парковочных мест"},
+                               {"icon": "🎟️", "title": "Абонемент", "desc": "Продлить или оформить"},
+                               {"icon": "🚗", "title": "Гостевой въезд", "desc": "Разовый доступ для гостя"},
+                               {"icon": "🕘", "title": "История въездов", "desc": "Кто и когда заезжал"},
+                           ])
+
+
+# ───── Консьерж ─────
+
+@portal.route('/concierge')
+def concierge():
+    return render_template('portal/service_page.html', title='Консьерж',
+                           subtitle='Услуги на стойке дома', icon='🛎️',
+                           intro='Закажите услуги, не спускаясь на первый этаж.',
+                           items=[
+                               {"icon": "🔑", "title": "Ключи и доступ", "desc": "Дубликаты, пропуска, брелоки"},
+                               {"icon": "📦", "title": "Принять посылку", "desc": "Хранение доставки у консьержа"},
+                               {"icon": "🧾", "title": "Документы УК", "desc": "Получить справку или выписку"},
+                               {"icon": "❓", "title": "Вопрос консьержу", "desc": "Связаться со стойкой дома"},
+                           ])
+
+
+# ───── Коворкинг ─────
+
+@portal.route('/coworking')
+def coworking():
+    return render_template('portal/service_page.html', title='Коворкинг',
+                           subtitle='Переговорки и рабочие места', icon='💼',
+                           intro='Бронируйте переговорные комнаты и рабочие места в доме.',
+                           items=[
+                               {"icon": "🪑", "title": "Рабочее место", "desc": "Бронь места на день"},
+                               {"icon": "💬", "title": "Переговорная", "desc": "Комната для встреч"},
+                               {"icon": "🎤", "title": "Лофт/события", "desc": "Площадка для мероприятий"},
+                               {"icon": "🕘", "title": "Мои брони", "desc": "Текущие и прошедшие бронирования"},
+                           ])
