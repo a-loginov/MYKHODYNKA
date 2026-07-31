@@ -449,7 +449,9 @@ hr {
 }
 
 .sub-card {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 14px;
   padding: 20px;
   border-radius: 20px;
   background: rgba(255, 255, 255, 0.06);
@@ -458,6 +460,7 @@ hr {
   border: 1px solid rgba(255, 255, 255, 0.08);
   color: #fff;
   text-decoration: none;
+  text-align: left;
   transition: transform 200ms var(--ease-out), background 200ms var(--ease-out);
 }
 
@@ -471,16 +474,39 @@ hr {
   transition-duration: 80ms;
 }
 
-.sub-card h3 {
+.sub-card__icon {
+  font-size: 28px;
+  line-height: 1;
+  flex: 0 0 auto;
+}
+
+.sub-card__body {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.sub-card__body h3 {
   font-size: 16px;
   font-weight: 600;
   margin-bottom: 4px;
 }
 
-.sub-card p {
+.sub-card__body p {
   font-size: 13px;
   color: rgba(255, 255, 255, 0.45);
   line-height: 1.4;
+}
+
+.sub-card__chevron {
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.3);
+  flex: 0 0 auto;
+  transition: transform 200ms var(--ease-out), color 200ms var(--ease-out);
+}
+
+.sub-card:hover .sub-card__chevron {
+  color: rgba(255, 255, 255, 0.7);
+  transform: translateX(3px);
 }
 
 .empty-state {
@@ -491,6 +517,99 @@ hr {
   text-align: center;
   color: rgba(255, 255, 255, 0.3);
   font-size: 14px;
+}
+
+/* ───── Page inner + glass block (подстраницы сервисов) ───── */
+.page-inner {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 24px 48px;
+}
+
+.glass-block {
+  position: relative;
+  z-index: 1;
+  margin-top: -30px;
+  padding: 28px 20px 24px;
+  border-radius: 28px;
+  background: rgba(18, 18, 38, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+}
+
+@media (max-width: 600px) {
+  .page-inner { padding-left: 16px; padding-right: 16px; }
+}
+
+/* ───── Compact cover for service sub-pages ───── */
+.cover--page {
+  height: 34vh;
+  min-height: 230px;
+  flex-direction: column;
+  gap: 0;
+  padding: 28px 0 56px;
+}
+
+.cover--page .cover__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.back-btn {
+  position: absolute;
+  left: 4px;
+  top: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-size: 22px;
+  line-height: 1;
+  text-decoration: none;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  transition: background 200ms var(--ease-out), transform 200ms var(--ease-out);
+}
+
+.back-btn:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.back-btn:active { transform: scale(0.92); }
+
+.cover__icon {
+  font-size: 42px;
+  line-height: 1;
+  margin-bottom: 10px;
+}
+
+.cover__title {
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  text-align: center;
+}
+
+.cover__subtitle {
+  margin-top: 6px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.6);
+  text-align: center;
+}
+
+@media (min-width: 1024px) {
+  .cover--page { height: 40vh; min-height: 280px; }
+  .cover--page .cover__title { font-size: 38px; }
+  .cover--page .cover__icon { font-size: 50px; }
 }
 
 /* ───── Mobile ───── */
@@ -708,6 +827,97 @@ hr {
   margin-top: 10px;
   font-size: 12px;
   color: rgba(255, 255, 255, 0.35);
+}
+
+/* Share button on request items */
+.request-item__actions {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.share-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.75);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 200ms var(--ease-out), color 200ms var(--ease-out);
+}
+
+.share-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+/* Share sheet preview + apps */
+.share-preview {
+  padding: 16px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 18px;
+}
+
+.share-preview__number {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.45);
+  margin-bottom: 4px;
+}
+
+.share-preview__title {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.share-preview__desc {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.4;
+}
+
+.share-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  gap: 12px;
+}
+
+.share-app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 8px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 200ms var(--ease-out), transform 200ms var(--ease-out);
+}
+
+.share-app:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+.share-app:active { transform: scale(0.96); }
+
+.share-app__icon { font-size: 30px; line-height: 1; }
+
+.share-app__name {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.75);
 }
 
 /* Status badges */

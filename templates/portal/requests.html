@@ -1,73 +1,80 @@
 {% extends "portal/base_portal.html" %}
 
+{% from "portal/_macros.html" import page_cover %}
+
 {% block title %}MYKHODYNKA — Заявки{% endblock %}
 
 {% block content %}
-<div class="page-header">
-    <h1>Заявки в ЖК</h1>
-    <p class="page-subtitle">Сообщите о проблеме — управляющая компания решит</p>
-</div>
+{{ page_cover('Заявки в ЖК', 'Сообщите о проблеме — управляющая компания решит', '🔧') }}
 
-{% with messages = get_flashed_messages(with_categories=true) %}
-    {% for category, message in messages %}
-    <div class="flash flash--{{ category }}" role="status">
-        <span aria-hidden="true">{{ '✓' if category == 'success' else '!' }}</span>
-        <span>{{ message }}</span>
-    </div>
-    {% endfor %}
-{% endwith %}
+<div class="page-inner">
+    <div class="glass-block">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+            <div class="flash flash--{{ category }}" role="status">
+                <span aria-hidden="true">{{ '✓' if category == 'success' else '!' }}</span>
+                <span>{{ message }}</span>
+            </div>
+            {% endfor %}
+        {% endwith %}
 
-<div class="chip-row" role="group" aria-label="Фильтр по категории">
-    <button type="button" class="chip is-active" data-filter="all">Все</button>
-    {% for c in categories %}
-    <button type="button" class="chip" data-filter="{{ c.id }}">{{ c.title }}</button>
-    {% endfor %}
-</div>
-
-<h2 class="section-title">Создать заявку</h2>
-<div class="sub-grid">
-    {% for c in categories %}
-    <button type="button"
-            class="sub-card request-card"
-            data-category="{{ c.id }}"
-            data-title="{{ c.title }}"
-            data-filter-key="{{ c.id }}"
-            aria-haspopup="dialog">
-        <span class="request-card__icon" aria-hidden="true">{{ c.icon }}</span>
-        <span class="request-card__body">
-            <h3>{{ c.title }}</h3>
-            <p>{{ c.desc }}</p>
-        </span>
-        <span class="request-card__chevron" aria-hidden="true">→</span>
-    </button>
-    {% endfor %}
-</div>
-
-<h2 class="section-title">Мои заявки</h2>
-{% if requests %}
-<div class="request-list">
-    {% for r in requests %}
-    <div class="request-item" data-filter-key="{{ r.category }}">
-        <div class="request-item__head">
-            <span class="request-item__title">{{ r.title }}</span>
-            <span class="status-badge status-badge--{{ r.status }}">{{ r.status_label }}</span>
+        <div class="chip-row" role="group" aria-label="Фильтр по категории">
+            <button type="button" class="chip is-active" data-filter="all">Все</button>
+            {% for c in categories %}
+            <button type="button" class="chip" data-filter="{{ c.id }}">{{ c.title }}</button>
+            {% endfor %}
         </div>
-        <p class="request-item__desc">{{ r.description }}</p>
-        <div class="request-item__meta">
-            <span>№{{ r.number }}</span>
-            <span>·</span>
-            <span>{{ r.created }}</span>
-            {% if r.apartment %}<span>·</span><span>кв. {{ r.apartment }}</span>{% endif %}
-            {% if r.urgency == 'high' %}<span>·</span><span>срочно</span>{% endif %}
+
+        <h2 class="section-title">Создать заявку</h2>
+        <div class="sub-grid">
+            {% for c in categories %}
+            <button type="button"
+                    class="sub-card request-card"
+                    data-category="{{ c.id }}"
+                    data-title="{{ c.title }}"
+                    data-filter-key="{{ c.id }}"
+                    aria-haspopup="dialog">
+                <span class="sub-card__icon request-card__icon" aria-hidden="true">{{ c.icon }}</span>
+                <span class="sub-card__body request-card__body">
+                    <h3>{{ c.title }}</h3>
+                    <p>{{ c.desc }}</p>
+                </span>
+                <span class="sub-card__chevron" aria-hidden="true">→</span>
+            </button>
+            {% endfor %}
         </div>
+
+        <h2 class="section-title">Мои заявки</h2>
+        {% if requests %}
+        <div class="request-list">
+            {% for r in requests %}
+            <div class="request-item" data-filter-key="{{ r.category }}">
+                <div class="request-item__head">
+                    <span class="request-item__title">{{ r.title }}</span>
+                    <span class="status-badge status-badge--{{ r.status }}">{{ r.status_label }}</span>
+                </div>
+                <p class="request-item__desc">{{ r.description }}</p>
+                <div class="request-item__meta">
+                    <span>№{{ r.number }}</span>
+                    <span>·</span>
+                    <span>{{ r.created }}</span>
+                    {% if r.apartment %}<span>·</span><span>кв. {{ r.apartment }}</span>{% endif %}
+                    {% if r.urgency == 'high' %}<span>·</span><span>срочно</span>{% endif %}
+                </div>
+                <div class="request-item__actions">
+                    <button type="button" class="share-btn" data-share-number="{{ r.number }}"
+                            data-share-title="{{ r.title }}" data-share-desc="{{ r.description }}">Поделиться</button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <p>Пока нет заявок. Выберите категорию выше, чтобы создать первую.</p>
+        </div>
+        {% endif %}
     </div>
-    {% endfor %}
 </div>
-{% else %}
-<div class="empty-state glass">
-    <p>Пока нет заявок. Выберите категорию выше, чтобы создать первую.</p>
-</div>
-{% endif %}
 
 <!-- Bottom sheet: форма новой заявки -->
 <div class="overlay" id="overlay"></div>
@@ -118,6 +125,16 @@
         <button type="submit" class="btn">Отправить заявку</button>
     </form>
 </div>
+
+<!-- Bottom sheet: поделиться заявкой -->
+<div class="bottom-sheet" id="shareSheet" role="dialog" aria-modal="true" aria-labelledby="shareTitle" aria-hidden="true">
+    <div class="bottom-sheet__handle"></div>
+    <div class="bottom-sheet__header">
+        <h2 id="shareTitle">Поделиться заявкой</h2>
+    </div>
+    <div class="bottom-sheet__body share-preview" id="sharePreview"></div>
+    <div class="share-grid" id="shareApps"></div>
+</div>
 {% endblock %}
 
 {% block scripts %}
@@ -154,7 +171,7 @@
 
         overlay.addEventListener('click', closeSheet);
         document.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape') closeSheet();
+            if (e.key === 'Escape') { closeSheet(); closeShareSheet(); }
         });
 
         // Фильтр по категории (чипы)
@@ -169,6 +186,78 @@
                 filterables.forEach(function (el) {
                     el.hidden = !(filter === 'all' || el.getAttribute('data-filter-key') === filter);
                 });
+            });
+        });
+
+        // ───── Поделиться заявкой ─────
+        var shareSheet = document.getElementById('shareSheet');
+        var sharePreview = document.getElementById('sharePreview');
+        var shareApps = document.getElementById('shareApps');
+
+        // Мессенджеры для шаринга (url — шаблон с {text}/{url})
+        var SHARE_APPS = [
+            { name: 'WhatsApp', icon: '💬', build: function (text) { return 'https://wa.me/?text=' + encodeURIComponent(text); } },
+            { name: 'Telegram', icon: '✈️', build: function (text) { return 'https://t.me/share/url?url=' + encodeURIComponent(text); } },
+            { name: 'VK', icon: '👥', build: function (text) { return 'https://vk.com/share.php?comment=' + encodeURIComponent(text) + '&title=' + encodeURIComponent(text); } },
+            { name: 'Mail', icon: '✉️', build: function (text) { return 'mailto:?subject=' + encodeURIComponent('Заявка MYKHODYNKA') + '&body=' + encodeURIComponent(text); } }
+        ];
+
+        function openShareSheet(number, title, desc) {
+            var text = 'Заявка №' + number + ' — ' + title + '.\n' + desc;
+            sharePreview.innerHTML =
+                '<div class="share-preview__number">Заявка №' + number + '</div>' +
+                '<div class="share-preview__title">' + title + '</div>' +
+                '<div class="share-preview__desc">' + desc + '</div>';
+
+            shareApps.innerHTML = '';
+            SHARE_APPS.forEach(function (app) {
+                var btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'share-app';
+                btn.innerHTML =
+                    '<span class="share-app__icon" aria-hidden="true">' + app.icon + '</span>' +
+                    '<span class="share-app__name">' + app.name + '</span>';
+                btn.addEventListener('click', function () {
+                    var url = app.build(text);
+                    if (app.name === 'Mail') { window.location.href = url; }
+                    else { window.open(url, '_blank', 'noopener'); }
+                    closeShareSheet();
+                });
+                shareApps.appendChild(btn);
+            });
+
+            // Нативный шаринг (если доступен)
+            if (navigator.share) {
+                var nativeBtn = document.createElement('button');
+                nativeBtn.type = 'button';
+                nativeBtn.className = 'share-app share-app--native';
+                nativeBtn.innerHTML = '<span class="share-app__icon" aria-hidden="true">📤</span><span class="share-app__name">Ещё…</span>';
+                nativeBtn.addEventListener('click', function () {
+                    navigator.share({ title: 'Заявка №' + number, text: text }).catch(function () {});
+                    closeShareSheet();
+                });
+                shareApps.appendChild(nativeBtn);
+            }
+
+            shareSheet.classList.add('open');
+            overlay.classList.add('open');
+            shareSheet.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeShareSheet() {
+            shareSheet.classList.remove('open');
+            shareSheet.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+        }
+
+        document.querySelectorAll('.share-btn').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                openShareSheet(
+                    btn.getAttribute('data-share-number'),
+                    btn.getAttribute('data-share-title'),
+                    btn.getAttribute('data-share-desc')
+                );
             });
         });
     })();

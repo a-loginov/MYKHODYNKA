@@ -1,0 +1,26 @@
+{% extends "portal/base_portal.html" %}
+{% from "portal/_macros.html" import page_cover %}
+
+{% block title %}MYKHODYNKA — {{ title }}{% endblock %}
+
+{% block content %}
+{{ page_cover(title, subtitle, icon) }}
+
+<div class="page-inner">
+    <div class="glass-block">
+        {% if intro %}<p class="service-intro">{{ intro }}</p>{% endif %}
+        <div class="sub-grid">
+            {% for item in items %}
+            <div class="sub-card">
+                <span class="sub-card__icon" aria-hidden="true">{{ item.icon }}</span>
+                <span class="sub-card__body">
+                    <h3>{{ item.title }}</h3>
+                    <p>{{ item.desc }}</p>
+                </span>
+                <span class="sub-card__chevron" aria-hidden="true">→</span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

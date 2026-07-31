@@ -1,29 +1,48 @@
 {% extends "portal/base_portal.html" %}
 
+{% from "portal/_macros.html" import page_cover %}
+
 {% block title %}MYKHODYNKA — Обращения{% endblock %}
 
 {% block content %}
-<div class="page-header">
-    <h1>Обращения</h1>
-    <p class="page-subtitle">Связь с управляющей компанией</p>
-</div>
+{{ page_cover('Обращения', 'Связь с управляющей компанией', '📋') }}
 
-<div class="sub-grid">
-    <div class="sub-card">
-        <h3>Написать обращение</h3>
-        <p>Официальное обращение в УК</p>
-    </div>
-    <div class="sub-card">
-        <h3>Задать вопрос</h3>
-        <p>Тарифы, услуги, общие вопросы</p>
-    </div>
-    <div class="sub-card">
-        <h3>Предложить идею</h3>
-        <p>Как улучшить жизнь в доме</p>
-    </div>
-    <div class="sub-card">
-        <h3>Статус обращений</h3>
-        <p>Отслеживание ответов</p>
+<div class="page-inner">
+    <div class="glass-block">
+        <div class="sub-grid">
+            <div class="sub-card">
+                <span class="sub-card__icon" aria-hidden="true">✍️</span>
+                <span class="sub-card__body">
+                    <h3>Написать обращение</h3>
+                    <p>Официальное обращение в УК</p>
+                </span>
+                <span class="sub-card__chevron" aria-hidden="true">→</span>
+            </div>
+            <div class="sub-card">
+                <span class="sub-card__icon" aria-hidden="true">❓</span>
+                <span class="sub-card__body">
+                    <h3>Задать вопрос</h3>
+                    <p>Тарифы, услуги, общие вопросы</p>
+                </span>
+                <span class="sub-card__chevron" aria-hidden="true">→</span>
+            </div>
+            <div class="sub-card">
+                <span class="sub-card__icon" aria-hidden="true">💡</span>
+                <span class="sub-card__body">
+                    <h3>Предложить идею</h3>
+                    <p>Как улучшить жизнь в доме</p>
+                </span>
+                <span class="sub-card__chevron" aria-hidden="true">→</span>
+            </div>
+            <div class="sub-card">
+                <span class="sub-card__icon" aria-hidden="true">📬</span>
+                <span class="sub-card__body">
+                    <h3>Статус обращений</h3>
+                    <p>Отслеживание ответов</p>
+                </span>
+                <span class="sub-card__chevron" aria-hidden="true">→</span>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}

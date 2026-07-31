@@ -1,21 +1,30 @@
 {% extends "portal/base_portal.html" %}
 
+{% from "portal/_macros.html" import page_cover %}
+
 {% block title %}MYKHODYNKA — Постоянные пропуска{% endblock %}
 
 {% block content %}
-<div class="page-header">
-    <h1>Постоянные пропуска</h1>
-    <p class="page-subtitle">Для родных, нянь, репетиторов</p>
-</div>
+{{ page_cover('Постоянные пропуска', 'Для родных, нянь, репетиторов', '📋') }}
 
-<div class="sub-grid">
-    <div class="sub-card">
-        <h3>Создать пропуск</h3>
-        <p>ФИО, телефон, срок действия</p>
-    </div>
-    <div class="sub-card">
-        <h3>Мои пропуска</h3>
-        <p>Список активных постоянных</p>
+<div class="page-inner">
+    <div class="glass-block">
+        <div class="sub-grid">
+            <div class="sub-card">
+                <span class="sub-card__icon" aria-hidden="true">＋</span>
+                <span class="sub-card__body">
+                    <h3>Создать пропуск</h3>
+                    <p>ФИО, телефон, срок действия</p>
+                </span>
+            </div>
+            <div class="sub-card">
+                <span class="sub-card__icon" aria-hidden="true">🗂️</span>
+                <span class="sub-card__body">
+                    <h3>Мои пропуска</h3>
+                    <p>Список активных постоянных</p>
+                </span>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}

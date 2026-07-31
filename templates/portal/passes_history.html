@@ -1,14 +1,17 @@
 {% extends "portal/base_portal.html" %}
 
+{% from "portal/_macros.html" import page_cover %}
+
 {% block title %}MYKHODYNKA — История пропусков{% endblock %}
 
 {% block content %}
-<div class="page-header">
-    <h1>История пропусков</h1>
-    <p class="page-subtitle">Кто и когда проходил по вашим пропускам</p>
-</div>
+{{ page_cover('История пропусков', 'Кто и когда проходил по вашим пропускам', '🕘') }}
 
-<div class="empty-state glass">
-    <p>Здесь будет отображаться история проходов по вашим пропускам</p>
+<div class="page-inner">
+    <div class="glass-block">
+        <div class="empty-state">
+            <p>Здесь будет отображаться история проходов по вашим пропускам</p>
+        </div>
+    </div>
 </div>
 {% endblock %}

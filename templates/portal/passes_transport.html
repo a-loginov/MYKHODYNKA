@@ -1,25 +1,37 @@
 {% extends "portal/base_portal.html" %}
 
+{% from "portal/_macros.html" import page_cover %}
+
 {% block title %}MYKHODYNKA — Транспорт{% endblock %}
 
 {% block content %}
-<div class="page-header">
-    <h1>Транспорт</h1>
-    <p class="page-subtitle">Пропуска для машин и спецтранспорта</p>
-</div>
+{{ page_cover('Транспорт', 'Пропуска для машин и спецтранспорта', '🚗') }}
 
-<div class="sub-grid">
-    <div class="sub-card">
-        <h3>Личный автомобиль</h3>
-        <p>Постоянный пропуск для своей машины</p>
-    </div>
-    <div class="sub-card">
-        <h3>Гостевой транспорт</h3>
-        <p>Такси, каршеринг, гости</p>
-    </div>
-    <div class="sub-card">
-        <h3>Грузовой транспорт</h3>
-        <p>Переезд, доставка, стройматериалы</p>
+<div class="page-inner">
+    <div class="glass-block">
+        <div class="sub-grid">
+            <div class="sub-card">
+                <span class="sub-card__icon" aria-hidden="true">🚙</span>
+                <span class="sub-card__body">
+                    <h3>Личный автомобиль</h3>
+                    <p>Постоянный пропуск для своей машины</p>
+                </span>
+            </div>
+            <div class="sub-card">
+                <span class="sub-card__icon" aria-hidden="true">🚕</span>
+                <span class="sub-card__body">
+                    <h3>Гостевой транспорт</h3>
+                    <p>Такси, каршеринг, гости</p>
+                </span>
+            </div>
+            <div class="sub-card">
+                <span class="sub-card__icon" aria-hidden="true">🚚</span>
+                <span class="sub-card__body">
+                    <h3>Грузовой транспорт</h3>
+                    <p>Переезд, доставка, стройматериалы</p>
+                </span>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}

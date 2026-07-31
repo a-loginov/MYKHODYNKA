@@ -1,29 +1,48 @@
 {% extends "portal/base_portal.html" %}
 
+{% from "portal/_macros.html" import page_cover %}
+
 {% block title %}MYKHODYNKA — Сообщения{% endblock %}
 
 {% block content %}
-<div class="page-header">
-    <h1>Сообщения</h1>
-    <p class="page-subtitle">Чаты и уведомления</p>
-</div>
+{{ page_cover('Сообщения', 'Чаты и уведомления', '💬') }}
 
-<div class="sub-grid">
-    <div class="sub-card">
-        <h3>Чат с УК</h3>
-        <p>Оперативная переписка</p>
-    </div>
-    <div class="sub-card">
-        <h3>Новости дома</h3>
-        <p>Объявления, отключения, плановые работы</p>
-    </div>
-    <div class="sub-card">
-        <h3>Уведомления</h3>
-        <p>Статус заявок, ответы, пропуска</p>
-    </div>
-    <div class="sub-card">
-        <h3>Чат жителей</h3>
-        <p>Общий чат дома</p>
+<div class="page-inner">
+    <div class="glass-block">
+        <div class="sub-grid">
+            <div class="sub-card">
+                <span class="sub-card__icon" aria-hidden="true">🏢</span>
+                <span class="sub-card__body">
+                    <h3>Чат с УК</h3>
+                    <p>Оперативная переписка</p>
+                </span>
+                <span class="sub-card__chevron" aria-hidden="true">→</span>
+            </div>
+            <div class="sub-card">
+                <span class="sub-card__icon" aria-hidden="true">📰</span>
+                <span class="sub-card__body">
+                    <h3>Новости дома</h3>
+                    <p>Объявления, отключения, плановые работы</p>
+                </span>
+                <span class="sub-card__chevron" aria-hidden="true">→</span>
+            </div>
+            <div class="sub-card">
+                <span class="sub-card__icon" aria-hidden="true">🔔</span>
+                <span class="sub-card__body">
+                    <h3>Уведомления</h3>
+                    <p>Статус заявок, ответы, пропуска</p>
+                </span>
+                <span class="sub-card__chevron" aria-hidden="true">→</span>
+            </div>
+            <div class="sub-card">
+                <span class="sub-card__icon" aria-hidden="true">👥</span>
+                <span class="sub-card__body">
+                    <h3>Чат жителей</h3>
+                    <p>Общий чат дома</p>
+                </span>
+                <span class="sub-card__chevron" aria-hidden="true">→</span>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}

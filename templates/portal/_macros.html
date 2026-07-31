@@ -1,0 +1,11 @@
+{# Компактный ковёр-шапка для страниц сервисов (стиль как на главной apps.html) #}
+{% macro page_cover(title, subtitle='', icon='') %}
+<section class="cover cover--page">
+    <div class="cover__inner">
+        <a href="{{ url_for('portal.dashboard') }}" class="back-btn" aria-label="Назад к сервисам">←</a>
+        {% if icon %}<div class="cover__icon" aria-hidden="true">{{ icon }}</div>{% endif %}
+        <h1 class="cover__title">{{ title }}</h1>
+        {% if subtitle %}<p class="cover__subtitle">{{ subtitle }}</p>{% endif %}
+    </div>
+</section>
+{% endmacro %}

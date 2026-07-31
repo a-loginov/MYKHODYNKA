@@ -1,29 +1,48 @@
 {% extends "portal/base_portal.html" %}
 
+{% from "portal/_macros.html" import page_cover %}
+
 {% block title %}MYKHODYNKA — Пропуска{% endblock %}
 
 {% block content %}
-<div class="page-header">
-    <h1>Пропуска</h1>
-    <p class="page-subtitle">Управление доступом на территорию</p>
-</div>
+{{ page_cover('Пропуска', 'Управление доступом на территорию', '🚪') }}
 
-<div class="sub-grid">
-    <a href="{{ url_for('portal.passes_permanent') }}" class="sub-card">
-        <h3>Постоянные</h3>
-        <p>Родственники, няни, репетиторы</p>
-    </a>
-    <a href="{{ url_for('portal.passes_temporary') }}" class="sub-card">
-        <h3>Одноразовые</h3>
-        <p>Гости, курьеры, доставка</p>
-    </a>
-    <a href="{{ url_for('portal.passes_transport') }}" class="sub-card">
-        <h3>Транспорт</h3>
-        <p>Автомобили, грузовой, такси</p>
-    </a>
-    <a href="{{ url_for('portal.passes_history') }}" class="sub-card">
-        <h3>История</h3>
-        <p>Кто и когда проходил</p>
-    </a>
+<div class="page-inner">
+    <div class="glass-block">
+        <div class="sub-grid">
+            <a href="{{ url_for('portal.passes_permanent') }}" class="sub-card">
+                <span class="sub-card__icon" aria-hidden="true">📋</span>
+                <span class="sub-card__body">
+                    <h3>Постоянные</h3>
+                    <p>Родственники, няни, репетиторы</p>
+                </span>
+                <span class="sub-card__chevron" aria-hidden="true">→</span>
+            </a>
+            <a href="{{ url_for('portal.passes_temporary') }}" class="sub-card">
+                <span class="sub-card__icon" aria-hidden="true">🎫</span>
+                <span class="sub-card__body">
+                    <h3>Одноразовые</h3>
+                    <p>Гости, курьеры, доставка</p>
+                </span>
+                <span class="sub-card__chevron" aria-hidden="true">→</span>
+            </a>
+            <a href="{{ url_for('portal.passes_transport') }}" class="sub-card">
+                <span class="sub-card__icon" aria-hidden="true">🚗</span>
+                <span class="sub-card__body">
+                    <h3>Транспорт</h3>
+                    <p>Автомобили, грузовой, такси</p>
+                </span>
+                <span class="sub-card__chevron" aria-hidden="true">→</span>
+            </a>
+            <a href="{{ url_for('portal.passes_history') }}" class="sub-card">
+                <span class="sub-card__icon" aria-hidden="true">🕘</span>
+                <span class="sub-card__body">
+                    <h3>История</h3>
+                    <p>Кто и когда проходил</p>
+                </span>
+                <span class="sub-card__chevron" aria-hidden="true">→</span>
+            </a>
+        </div>
+    </div>
 </div>
 {% endblock %}

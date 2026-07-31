@@ -1,48 +1,64 @@
 {% extends "portal/base_portal.html" %}
 
+{% from "portal/_macros.html" import page_cover %}
+
 {% block title %}MYKHODYNKA{% endblock %}
 
 {% block content %}
-<div class="apps-header">
-    <h1>Сервисы</h1>
-    <p class="apps-subtitle">Портал жителя Ходынки</p>
-</div>
+{{ page_cover('Сервисы', 'Портал жителя Ходынки', '🏠') }}
 
-<div class="apps-grid">
-    <a href="{{ url_for('portal.passes') }}" class="app-card">
-        <div class="app-card__icon">🚪</div>
-        <div class="app-card__title">Пропуска</div>
-        <div class="app-card__desc">Гости, транспорт, доступ</div>
-    </a>
-
-    <a href="{{ url_for('portal.requests_page') }}" class="app-card">
-        <div class="app-card__icon">🔧</div>
-        <div class="app-card__title">Заявки в ЖК</div>
-        <div class="app-card__desc">Поломки, ремонт, уборка</div>
-    </a>
-
-    <a href="{{ url_for('portal.appeals') }}" class="app-card">
-        <div class="app-card__icon">📋</div>
-        <div class="app-card__title">Обращения</div>
-        <div class="app-card__desc">Связь с управляющей</div>
-    </a>
-
-    <a href="{{ url_for('portal.messages') }}" class="app-card">
-        <div class="app-card__icon">💬</div>
-        <div class="app-card__title">Сообщения</div>
-        <div class="app-card__desc">Чаты, новости, чат-жителей</div>
-    </a>
-
-    <a href="{{ url_for('portal.passes') }}" class="app-card">
-        <div class="app-card__icon">🗓️</div>
-        <div class="app-card__title">Мероприятия</div>
-        <div class="app-card__desc">Собрания, встречи, события</div>
-    </a>
-
-    <a href="{{ url_for('portal.messages') }}" class="app-card">
-        <div class="app-card__icon">📢</div>
-        <div class="app-card__title">Объявления</div>
-        <div class="app-card__desc">Новости дома и УК</div>
-    </a>
+<div class="page-inner">
+    <div class="glass-block">
+        <div class="sub-grid">
+            <a href="{{ url_for('portal.passes') }}" class="sub-card">
+                <span class="sub-card__icon" aria-hidden="true">🚪</span>
+                <span class="sub-card__body">
+                    <h3>Пропуска</h3>
+                    <p>Гости, транспорт, доступ</p>
+                </span>
+                <span class="sub-card__chevron" aria-hidden="true">→</span>
+            </a>
+            <a href="{{ url_for('portal.requests_page') }}" class="sub-card">
+                <span class="sub-card__icon" aria-hidden="true">🔧</span>
+                <span class="sub-card__body">
+                    <h3>Заявки в ЖК</h3>
+                    <p>Поломки, ремонт, уборка</p>
+                </span>
+                <span class="sub-card__chevron" aria-hidden="true">→</span>
+            </a>
+            <a href="{{ url_for('portal.appeals') }}" class="sub-card">
+                <span class="sub-card__icon" aria-hidden="true">📋</span>
+                <span class="sub-card__body">
+                    <h3>Обращения</h3>
+                    <p>Связь с управляющей</p>
+                </span>
+                <span class="sub-card__chevron" aria-hidden="true">→</span>
+            </a>
+            <a href="{{ url_for('portal.messages') }}" class="sub-card">
+                <span class="sub-card__icon" aria-hidden="true">💬</span>
+                <span class="sub-card__body">
+                    <h3>Сообщения</h3>
+                    <p>Чаты, новости, чат-жителей</p>
+                </span>
+                <span class="sub-card__chevron" aria-hidden="true">→</span>
+            </a>
+            <a href="{{ url_for('portal.passes') }}" class="sub-card">
+                <span class="sub-card__icon" aria-hidden="true">🗓️</span>
+                <span class="sub-card__body">
+                    <h3>Мероприятия</h3>
+                    <p>Собрания, встречи, события</p>
+                </span>
+                <span class="sub-card__chevron" aria-hidden="true">→</span>
+            </a>
+            <a href="{{ url_for('portal.messages') }}" class="sub-card">
+                <span class="sub-card__icon" aria-hidden="true">📢</span>
+                <span class="sub-card__body">
+                    <h3>Объявления</h3>
+                    <p>Новости дома и УК</p>
+                </span>
+                <span class="sub-card__chevron" aria-hidden="true">→</span>
+            </a>
+        </div>
+    </div>
 </div>
 {% endblock %}
