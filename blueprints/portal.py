@@ -173,7 +173,14 @@ def guest_arrived(uuid):
                 pass_id=gp.id,
             )
             db.session.add(notif)
-        db.session.commit()
+        try:
+            db.session.commit()
+        except Exception as exc:  # noqa: BLE001
+            db.session.rollback()
+            # Всегда отдаём JSON, чтобы гость увидел понятную ошибку,
+            # а не «Проверьте соединение» из-за HTML-страницы 500.
+            print(f"[error] guest_arrived commit failed: {exc}")
+            return jsonify({'error': 'Не удалось сохранить. Попробуйте ещё раз.'}), 500
 
     return jsonify({'ok': True})
 

@@ -300,23 +300,39 @@
                 confirmBtn.disabled = true;
                 cancelBtn.disabled = true;
                 confirmBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Отправляем…';
-                fetch('/p/{{ pass_info.id }}/arrived', { method: 'POST' })
-                    .then(function (r) { return r.json(); })
+
+                function resetBtn() {
+                    confirmBtn.disabled = false;
+                    cancelBtn.disabled = false;
+                    confirmBtn.innerHTML = '<i class="fa-solid fa-bell"></i> Да, я прибыл(а)';
+                }
+
+                fetch('/p/{{ pass_info.id }}/arrived', {
+                    method: 'POST',
+                    headers: { 'Accept': 'application/json' }
+                })
+                    // Читаем как текст: ответ на ошибку может быть HTML, а не JSON
+                    .then(function (r) {
+                        return r.text().then(function (body) {
+                            return { ok: r.ok, status: r.status, body: body };
+                        });
+                    })
                     .then(function (res) {
-                        if (res.error) {
-                            alert(res.error);
-                            confirmBtn.disabled = false;
-                            cancelBtn.disabled = false;
-                            confirmBtn.innerHTML = '<i class="fa-solid fa-bell"></i> Да, я прибыл(а)';
+                        var data = {};
+                        try { data = JSON.parse(res.body); } catch (e) {}
+
+                        if (res.ok && !data.error) {
+                            location.reload();
                             return;
                         }
-                        location.reload();
+                        // Сервер ответил — значит связь есть. Показываем реальную причину.
+                        alert(data.error || ('Сервис временно недоступен (код ' + res.status + '). Попробуйте позже.'));
+                        resetBtn();
                     })
                     .catch(function () {
+                        // Сюда попадаем только при настоящем обрыве сети
                         alert('Не удалось отправить. Проверьте соединение.');
-                        confirmBtn.disabled = false;
-                        cancelBtn.disabled = false;
-                        confirmBtn.innerHTML = '<i class="fa-solid fa-bell"></i> Да, я прибыл(а)';
+                        resetBtn();
                     });
             });
         })();
