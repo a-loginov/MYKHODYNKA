@@ -37,3 +37,19 @@ class people(db.Model, UserMixin):
 
     def get_id(self):
         return f"student-{self.id}"
+
+
+#-----------------------------------   SERVICE REQUESTS   -----------------------------------
+class ServiceRequest(db.Model):
+    id = db.Column(db.UUID, unique=True, primary_key=True, default=db.func.gen_random_uuid())
+    user_id = db.Column(db.UUID, db.ForeignKey('people.id'), nullable=True)
+    number = db.Column(db.Integer, nullable=False)
+    category = db.Column(db.String(30), nullable=False)
+    title = db.Column(db.String(60), nullable=False)
+    description = db.Column(db.Text, nullable=False)
+    apartment = db.Column(db.String(10), nullable=True)
+    entrance = db.Column(db.String(10), nullable=True)
+    urgency = db.Column(db.String(10), default='normal', nullable=False)
+    phone = db.Column(db.String(30), nullable=True)
+    status = db.Column(db.String(20), default='new', nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.now, nullable=False)

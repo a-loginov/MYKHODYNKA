@@ -34,7 +34,7 @@ app.register_blueprint(portal)
 
 
 def _sync_schema():
-    """Идемпотентно добавляет недостающие колонки в существующую таблицу people."""
+    """Идемпотентно добавляет недостающие колонки и создаёт недостающие таблицы."""
     with app.app_context():
         try:
             db.session.execute(text(
@@ -50,6 +50,8 @@ def _sync_schema():
                 "ALTER TABLE people ALTER COLUMN group_letter DROP NOT NULL"
             ))
             db.session.commit()
+            # Создаём недостающие таблицы (не трогает существующие)
+            db.create_all()
         except Exception as exc:  # noqa: BLE001
             db.session.rollback()
             print(f"[warn] schema sync skipped: {exc}")

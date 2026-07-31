@@ -1,7 +1,7 @@
-from datetime import datetime
-
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import current_user, login_required
+
+from db_settings import db, ServiceRequest
 
 portal = Blueprint('portal', __name__, template_folder='../templates/portal')
 
@@ -20,20 +20,26 @@ REQUEST_CATEGORIES = [
 CATEGORY_TITLES = {c["id"]: c["title"] for c in REQUEST_CATEGORIES}
 STATUS_LABELS = {"new": "Новая", "in_progress": "В работе", "done": "Выполнена"}
 
-# Демо-хранилище заявок (в памяти процесса)
-_requests = [
-    {"number": 1042, "category": "breakage", "title": "Что-то сломалось",
-     "description": "Не работает домофон у 3 подъезда", "apartment": "58",
-     "entrance": "3", "urgency": "high", "phone": "", "status": "in_progress", "created": "28.07"},
-    {"number": 1039, "category": "cleaning", "title": "Уборка",
-     "description": "Не вывезли мусор на площадке 5 этажа", "apartment": "58",
-     "entrance": "3", "urgency": "normal", "phone": "", "status": "done", "created": "24.07"},
-]
-_next_number = [1043]
+
+def _next_number():
+    top = db.session.query(db.func.max(ServiceRequest.number)).scalar()
+    return (top or 0) + 1
 
 
 def _serialize(r):
-    return dict(r, status_label=STATUS_LABELS.get(r["status"], r["status"]))
+    return {
+        "number": r.number,
+        "category": r.category,
+        "title": r.title,
+        "description": r.description,
+        "apartment": r.apartment,
+        "entrance": r.entrance,
+        "urgency": r.urgency,
+        "phone": r.phone,
+        "status": r.status,
+        "status_label": STATUS_LABELS.get(r.status, r.status),
+        "created": r.created_at.strftime('%d.%m'),
+    }
 
 
 @portal.route('/')
@@ -76,12 +82,17 @@ def passes_history():
 @portal.route('/requests')
 @login_required
 def requests_page():
-    reqs = [_serialize(r) for r in reversed(_requests)]
+    rows = (ServiceRequest.query
+            .filter(ServiceRequest.user_id == current_user.id)
+            .order_by(ServiceRequest.created_at.desc())
+            .all())
+    reqs = [_serialize(r) for r in rows]
     return render_template('portal/requests.html',
                            categories=REQUEST_CATEGORIES, requests=reqs)
 
 
 @portal.route('/requests/new', methods=['POST'])
+@login_required
 def requests_create():
     category = request.form.get('category', 'other')
     if category not in CATEGORY_TITLES:
@@ -92,30 +103,32 @@ def requests_create():
         flash('Опишите проблему, чтобы создать заявку', 'error')
         return redirect(url_for('portal.requests_page'))
 
-    number = _next_number[0]
-    _next_number[0] += 1
-    _requests.append({
-        "number": number,
-        "category": category,
-        "title": CATEGORY_TITLES[category],
-        "description": description,
-        "apartment": (request.form.get('apartment') or '').strip(),
-        "entrance": (request.form.get('entrance') or '').strip(),
-        "urgency": request.form.get('urgency', 'normal'),
-        "phone": (request.form.get('phone') or '').strip(),
-        "status": "new",
-        "created": datetime.now().strftime('%d.%m'),
-    })
-    flash(f'Заявка №{number} создана — мы уже её получили', 'success')
+    req = ServiceRequest(
+        user_id=current_user.id,
+        number=_next_number(),
+        category=category,
+        title=CATEGORY_TITLES[category],
+        description=description,
+        apartment=(request.form.get('apartment') or '').strip() or None,
+        entrance=(request.form.get('entrance') or '').strip() or None,
+        urgency=request.form.get('urgency', 'normal'),
+        phone=(request.form.get('phone') or '').strip() or None,
+        status="new",
+    )
+    db.session.add(req)
+    db.session.commit()
+    flash(f'Заявка №{req.number} создана — мы уже её получили', 'success')
     return redirect(url_for('portal.requests_page'))
 
 
 @portal.route('/appeals')
+@login_required
 def appeals():
     return render_template('portal/appeals.html')
 
 
 @portal.route('/messages')
+@login_required
 def messages():
     return render_template('portal/messages.html')
 
@@ -123,6 +136,7 @@ def messages():
 # ───── Счётчики ─────
 
 @portal.route('/meters')
+@login_required
 def meters():
     return render_template('portal/service_page.html', title='Счётчики',
                            subtitle='Показания воды, света и тепла', icon='🧮',
@@ -138,6 +152,7 @@ def meters():
 # ───── Парковка ─────
 
 @portal.route('/parking')
+@login_required
 def parking():
     return render_template('portal/service_page.html', title='Парковка',
                            subtitle='Места, абонементы, гостевой доступ', icon='🅿️',
@@ -153,6 +168,7 @@ def parking():
 # ───── Консьерж ─────
 
 @portal.route('/concierge')
+@login_required
 def concierge():
     return render_template('portal/service_page.html', title='Консьерж',
                            subtitle='Услуги на стойке дома', icon='🛎️',
@@ -168,6 +184,7 @@ def concierge():
 # ───── Коворкинг ─────
 
 @portal.route('/coworking')
+@login_required
 def coworking():
     return render_template('portal/service_page.html', title='Коворкинг',
                            subtitle='Переговорки и рабочие места', icon='💼',
