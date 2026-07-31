@@ -115,7 +115,7 @@
                 <span>{{ pass_info.status_label }}</span>
             </div>
 
-            {% if pass_info.status != 'arrived' and pass_info.status not in ('rejected',) %}
+            {% if pass_info.status == 'new' %}
             <div class="arrive-card">
                 <div class="arrive-icon"><i class="fa-solid fa-bell"></i></div>
                 <div>
@@ -131,7 +131,21 @@
             {% if pass_info.status == 'arrived' %}
             <div class="arrived-ok">
                 <i class="fa-solid fa-circle-check"></i>
-                <span>Житель уведомлён. Вас уже ждут!</span>
+                <span>Житель уведомлён — ожидайте подтверждения…</span>
+            </div>
+            {% endif %}
+
+            {% if pass_info.status in ('approved', 'done') %}
+            <div class="arrived-ok">
+                <i class="fa-solid fa-door-open"></i>
+                <span>Вас впустили! Проходите — вас уже ждут.</span>
+            </div>
+            {% endif %}
+
+            {% if pass_info.status == 'rejected' %}
+            <div class="arrived-ok" style="background:#ffecec;color:#dc3545;">
+                <i class="fa-solid fa-circle-xmark"></i>
+                <span>К сожалению, во входе отказано. Свяжитесь с тем, кто выдал пропуск.</span>
             </div>
             {% endif %}
 
@@ -167,6 +181,28 @@
         {% endif %}
     </div>
 
+    {% if not error %}
+    <script>
+        // Живое обновление статуса: ждём ответа жителя (впустил / отклонил)
+        (function () {
+            var current = '{{ pass_info.status }}';
+            var passId = '{{ pass_info.id }}';
+            if (!passId) return;
+            if (['approved', 'done', 'rejected'].indexOf(current) !== -1) return;
+            var timer = setInterval(function () {
+                fetch('/p/' + passId + '/status')
+                    .then(function (r) { return r.json(); })
+                    .then(function (res) {
+                        if (res.status && res.status !== current) {
+                            clearInterval(timer);
+                            location.reload();
+                        }
+                    })
+                    .catch(function () {});
+            }, 5000);
+        })();
+    </script>
+
     <script>
         (function () {
             var btn = document.getElementById('arrivedBtn');
@@ -193,5 +229,6 @@
             });
         })();
     </script>
+    {% endif %}
 </body>
 </html>

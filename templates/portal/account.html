@@ -51,6 +51,69 @@
             </div>
         </div>
 
+        <style>
+            .acc-form { margin-bottom: 8px; }
+            .acc-field { margin-bottom: 12px; }
+            .acc-field label { display: block; font-size: 13px; font-weight: 600; color: #5a5f7a; margin-bottom: 6px; }
+            .acc-field input {
+                width: 100%; padding: 12px 14px; border-radius: 12px; border: 1px solid rgba(20,24,60,0.12);
+                background: #f4f6fb; color: #1b1f3b; font-family: inherit; font-size: 15px; outline: none;
+            }
+            .acc-field input:focus { border-color: #4446E1; }
+            .acc-btn {
+                border: none; cursor: pointer; font-family: inherit; font-weight: 700; font-size: 14px;
+                padding: 12px 18px; border-radius: 12px; background: linear-gradient(135deg,#4446E1,#2E3192); color: #fff;
+            }
+            .acc-btn:active { transform: scale(0.97); }
+            .acc-toggle { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+            .acc-toggle__text h3 { font-size: 15px; font-weight: 700; color: #1b1f3b; margin-bottom: 2px; }
+            .acc-toggle__text p { font-size: 13px; color: #6a6f8a; }
+            .switch { position: relative; width: 50px; height: 28px; flex-shrink: 0; }
+            .switch input { opacity: 0; width: 0; height: 0; }
+            .switch .track { position: absolute; inset: 0; background: #cfd3e6; border-radius: 999px; transition: background 200ms; cursor: pointer; }
+            .switch .track::before { content: ''; position: absolute; height: 22px; width: 22px; left: 3px; top: 3px; background: #fff; border-radius: 50%; transition: transform 200ms; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+            .switch input:checked + .track { background: #4446E1; }
+            .switch input:checked + .track::before { transform: translateX(22px); }
+        </style>
+
+        <!-- Редактировать профиль -->
+        <h2 class="section-title">Редактировать профиль</h2>
+        <form class="acc-form" method="post" action="{{ url_for('portal.account_profile') }}">
+            <div class="acc-field"><label for="f-surname">Фамилия</label><input type="text" id="f-surname" name="surname" value="{{ surname or '' }}" required></div>
+            <div class="acc-field"><label for="f-name">Имя</label><input type="text" id="f-name" name="name" value="{{ name or '' }}" required></div>
+            <div class="acc-field"><label for="f-lastname">Отчество</label><input type="text" id="f-lastname" name="lastname" value="{{ lastname or '' }}"></div>
+            <div class="acc-field"><label for="f-apt">Квартира</label><input type="text" id="f-apt" name="apartment" value="{{ apartment or '' }}"></div>
+            <button type="submit" class="acc-btn">Сохранить</button>
+        </form>
+
+        <!-- Приватность -->
+        <h2 class="section-title">Приватность</h2>
+        <div class="account-list">
+            <div class="account-row account-row--block">
+                <form method="post" action="{{ url_for('portal.account_privacy') }}" id="privacyForm" style="width:100%;">
+                    <div class="acc-toggle">
+                        <div class="acc-toggle__text">
+                            <h3>Заблокировать номер</h3>
+                            <p>Ваш телефон нельзя будет найти или увидеть в системе.</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" name="phone_hidden" id="phoneHidden" {{ 'checked' if phone_hidden }} onchange="document.getElementById('privacyForm').submit();">
+                            <span class="track"></span>
+                        </label>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Безопасность -->
+        <h2 class="section-title">Безопасность</h2>
+        <form class="acc-form" method="post" action="{{ url_for('portal.account_password') }}">
+            <div class="acc-field"><label for="p-cur">Текущий пароль</label><input type="password" id="p-cur" name="current" autocomplete="current-password" required></div>
+            <div class="acc-field"><label for="p-new">Новый пароль</label><input type="password" id="p-new" name="new" autocomplete="new-password" required></div>
+            <div class="acc-field"><label for="p-new2">Повторите новый пароль</label><input type="password" id="p-new2" name="new2" autocomplete="new-password" required></div>
+            <button type="submit" class="acc-btn">Изменить пароль</button>
+        </form>
+
         <!-- Биометрия -->
         <h2 class="section-title">Вход по биометрии</h2>
         <div class="account-list">

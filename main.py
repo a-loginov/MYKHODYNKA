@@ -61,6 +61,9 @@ def _sync_schema():
             db.session.execute(text(
                 "ALTER TABLE guest_pass ADD COLUMN IF NOT EXISTS arrived_at TIMESTAMP"
             ))
+            db.session.execute(text(
+                "ALTER TABLE people ADD COLUMN IF NOT EXISTS phone_hidden BOOLEAN DEFAULT FALSE NOT NULL"
+            ))
             db.session.commit()
         except Exception as exc:  # noqa: BLE001
             db.session.rollback()

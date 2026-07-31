@@ -26,6 +26,7 @@ class people(db.Model, UserMixin):
     total_score = db.Column(db.Integer, default=0, nullable=False)
     password_hash = db.Column(db.String(128), nullable=True)
     apartment = db.Column(db.String(10), nullable=True)
+    phone_hidden = db.Column(db.Boolean, default=False, nullable=False)  # «Заблокировать номер»
 
     def set_password(self, password):
         self.password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
