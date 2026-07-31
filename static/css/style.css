@@ -21,7 +21,7 @@ body {
 .auth-body {
   background:
     linear-gradient(to bottom, rgba(12, 15, 26, 0.35) 0%, rgba(12, 15, 26, 0.55) 100%),
-    url('../img/apps-wallpaper.svg') top center no-repeat,
+    url('../img/apps-wallpeprer.png') top center no-repeat,
     #f4f6fb;
   background-size: cover, cover, auto;
   background-position: top center;
@@ -73,10 +73,10 @@ body {
   justify-content: center;
   font-size: 36px;
   border-radius: 22px;
-  background: linear-gradient(135deg, #4446E1, #5d5fe0);
+  background: linear-gradient(135deg, #6DAD68, #84C879);
   color: #fff;
   margin-bottom: 18px;
-  box-shadow: 0 8px 24px rgba(68, 70, 225, 0.35);
+  box-shadow: 0 8px 24px rgba(109, 173, 104, 0.35);
 }
 
 .card h1 {
@@ -133,9 +133,9 @@ body {
 .form-group input:focus,
 .form-group textarea:focus,
 .form-group select:focus {
-  border-color: #4446E1;
+  border-color: #6DAD68;
   background: #fff;
-  box-shadow: 0 0 0 4px rgba(68, 70, 225, 0.12);
+  box-shadow: 0 0 0 4px rgba(109, 173, 104, 0.12);
 }
 
 .hint {
@@ -153,15 +153,15 @@ body {
   font-size: 16px;
   font-weight: 700;
   font-family: inherit;
-  background: linear-gradient(135deg, #4446E1, #2E3192);
+  background: linear-gradient(135deg, #6DAD68, #4A8544);
   color: #fff;
   cursor: pointer;
   transition: transform 160ms var(--ease-out), box-shadow 200ms var(--ease-out), opacity 200ms var(--ease-out);
-  box-shadow: 0 6px 20px rgba(68, 70, 225, 0.3);
+  box-shadow: 0 6px 20px rgba(109, 173, 104, 0.3);
 }
 
 .btn:hover {
-  box-shadow: 0 8px 26px rgba(68, 70, 225, 0.4);
+  box-shadow: 0 8px 26px rgba(109, 173, 104, 0.4);
 }
 
 .btn:active {
@@ -183,7 +183,7 @@ hr {
 }
 
 .register-link a {
-  color: #4446E1;
+  color: #6DAD68;
   text-decoration: none;
   font-weight: 700;
 }
@@ -207,8 +207,8 @@ hr {
 }
 
 .info-trigger:hover {
-  border-color: #4446E1;
-  color: #4446E1;
+  border-color: #6DAD68;
+  color: #6DAD68;
 }
 
 .info-trigger:active {
@@ -325,7 +325,7 @@ hr {
 /* ═══════════ PORTAL ═══════════ */
 
 .portal-body {
-  background: url('../img/apps-wallpaper.svg') top center no-repeat, linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+  background: url('../img/apps-wallpeprer.png') top center no-repeat, linear-gradient(135deg, #0f0c29, #302b63, #24243e);
   background-size: cover;
   background-position: top center;
   background-repeat: no-repeat;
@@ -1066,7 +1066,7 @@ hr {
   border-radius: 0;
   background-image:
     linear-gradient(to bottom, rgba(12, 15, 26, 0.35) 0%, rgba(12, 15, 26, 0.55) 100%),
-    url('../img/apps-wallpaper.svg');
+    url('../img/apps-wallpeprer.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -1358,7 +1358,7 @@ hr {
 /* Lift widget */
 .widget.lift {
   background:
-    linear-gradient(135deg, rgba(68, 70, 225, 0.4), rgba(93, 95, 224, 0.1)),
+    linear-gradient(135deg, rgba(109, 173, 104, 0.4), rgba(93, 95, 224, 0.1)),
     rgba(255, 255, 255, 0.05);
 }
 
@@ -1582,7 +1582,7 @@ hr {
 
 .sub-card__body p { color: #6a6f8a; }
 .sub-card__chevron { color: #b0b4cf; }
-.sub-card:hover .sub-card__chevron { color: #4446E1; }
+.sub-card:hover .sub-card__chevron { color: #6DAD68; }
 
 .section-title { color: #5a5f7a; }
 
@@ -1596,8 +1596,8 @@ hr {
 
 .chip.is-active {
   color: #fff;
-  border-color: #4446E1;
-  background: #4446E1;
+  border-color: #6DAD68;
+  background: #6DAD68;
 }
 
 .request-item {
@@ -1611,10 +1611,10 @@ hr {
 .share-btn {
   border: 1px solid rgba(20, 24, 60, 0.12);
   background: #fff;
-  color: #4446E1;
+  color: #6DAD68;
 }
 
-.share-btn:hover { background: #eef0ff; color: #4446E1; }
+.share-btn:hover { background: #e9f4e7; color: #6DAD68; }
 
 .empty-state {
   background: #f4f6fb;
@@ -1639,7 +1639,7 @@ hr {
   width: 72px;
   height: 72px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #4446E1, #5d5fe0);
+  background: linear-gradient(135deg, #6DAD68, #84C879);
   color: #fff;
   font-size: 30px;
   font-weight: 700;
@@ -1741,7 +1741,7 @@ hr {
   padding: 12px 14px;
 }
 .biometric-info { display: flex; align-items: center; gap: 12px; }
-.biometric-info > i { font-size: 22px; color: #4446E1; }
+.biometric-info > i { font-size: 22px; color: #6DAD68; }
 .biometric-name { font-size: 15px; font-weight: 600; color: #1b1f3b; }
 .biometric-del {
   border: none;
@@ -1769,13 +1769,13 @@ hr {
   margin-bottom: 10px;
   position: relative;
 }
-.notif-item--unread { background: #eef0ff; border-color: rgba(68, 70, 225, 0.2); }
+.notif-item--unread { background: #e9f4e7; border-color: rgba(109, 173, 104, 0.2); }
 .notif-icon {
   width: 42px; height: 42px; flex: 0 0 auto;
   display: flex; align-items: center; justify-content: center;
   border-radius: 12px;
   background: #fff;
-  color: #4446E1;
+  color: #6DAD68;
   font-size: 18px;
   box-shadow: 0 2px 8px rgba(20, 24, 60, 0.08);
 }
@@ -1786,6 +1786,29 @@ hr {
 .notif-dot {
   width: 10px; height: 10px; flex: 0 0 auto;
   border-radius: 50%;
-  background: #4446E1;
+  background: #6DAD68;
   margin-top: 6px;
+}
+
+/* ═══════════ ТЁМНАЯ ТЕМА: ночная обложка ═══════════ */
+@media (prefers-color-scheme: dark) {
+  .portal-body {
+    background: url('../img/apps-wallpeprer-night.png') top center no-repeat, linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+    background-size: cover;
+    background-position: top center;
+    background-repeat: no-repeat;
+  }
+  .auth-body {
+    background:
+      linear-gradient(to bottom, rgba(12, 15, 26, 0.45) 0%, rgba(12, 15, 26, 0.65) 100%),
+      url('../img/apps-wallpeprer-night.png') top center no-repeat,
+      #101416;
+    background-size: cover, cover, auto;
+    background-position: top center;
+  }
+  .cover {
+    background-image:
+      linear-gradient(to bottom, rgba(12, 15, 26, 0.45) 0%, rgba(12, 15, 26, 0.65) 100%),
+      url('../img/apps-wallpeprer-night.png');
+  }
 }
