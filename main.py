@@ -2,6 +2,7 @@ from flask import Flask
 from config import load_dotenv
 import os
 
+from sqlalchemy import text
 from db_settings import db, bcrypt, login_manager, people
 from blueprints.auth import auth
 from blueprints.portal import portal
@@ -30,6 +31,31 @@ def load_user(user_id):
 
 app.register_blueprint(auth)
 app.register_blueprint(portal)
+
+
+def _sync_schema():
+    """Идемпотентно добавляет недостающие колонки в существующую таблицу people."""
+    with app.app_context():
+        try:
+            db.session.execute(text(
+                "ALTER TABLE people ADD COLUMN IF NOT EXISTS password_hash VARCHAR(128)"
+            ))
+            db.session.execute(text(
+                "ALTER TABLE people ADD COLUMN IF NOT EXISTS apartment VARCHAR(10)"
+            ))
+            db.session.execute(text(
+                "ALTER TABLE people ALTER COLUMN group_number DROP NOT NULL"
+            ))
+            db.session.execute(text(
+                "ALTER TABLE people ALTER COLUMN group_letter DROP NOT NULL"
+            ))
+            db.session.commit()
+        except Exception as exc:  # noqa: BLE001
+            db.session.rollback()
+            print(f"[warn] schema sync skipped: {exc}")
+
+
+_sync_schema()
 
 
 if __name__ == "__main__":

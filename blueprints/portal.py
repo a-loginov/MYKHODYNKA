@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from flask import Blueprint, render_template, request, redirect, url_for, flash
-from flask_login import current_user
+from flask_login import current_user, login_required
 
 portal = Blueprint('portal', __name__, template_folder='../templates/portal')
 
@@ -37,6 +37,7 @@ def _serialize(r):
 
 
 @portal.route('/')
+@login_required
 def dashboard():
     name = current_user.name if current_user.is_authenticated else None
     return render_template('portal/apps.html', name=name)
